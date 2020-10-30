@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from contextlib import contextmanager
 from utils.models import *
-from decouple import config
+from config import DATABASES
 
 import logging
 
@@ -22,11 +22,13 @@ def get_db():
     initiates connection to configured database.  Default is non-authenticated SQL.
     Modifty g.db = *connect to match intended database connection.
     """
+    db_uri = DATABASES['default']
+
     db_logger = logging.getLogger(__name__ + '.getdb')
     if not hasattr(g, 'db'):
-        db_logger.info('DB connection not found. Attempting connection to {}.'.format(config('DATABASE_URI', default="sqlite:///scraper.db")))
+        db_logger.info('DB connection not found. Attempting connection to {}.'.format(db_uri))
         try:
-            g.engine = create_engine(config('DATABASE_URI', default="sqlite:///mpi_test.sqlite3"))
+            g.engine = create_engine(db_uri)
             g.db = g.engine.connect()
         except:
             db_logger.error('Could not establish connection.  Aborting.')
