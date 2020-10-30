@@ -15,7 +15,6 @@ DATABASES = {
     )
 }
 
-print('Database Setup: ', DATABASES)
 
 if DEBUG:
     loglevel = 'DEBUG'

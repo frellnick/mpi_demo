@@ -50,11 +50,27 @@ def get_session():
 
 
 def close_db(e=None):
-    db = get_db()
+    db = get_session()
     if db is not None:
         db.close()
 
 
 def init_db():
-    db = get_db()
+    db = get_session()
     Base.metadata.create_all(db)
+
+
+## DB Utils ##
+
+def query_db(query):
+    db = get_db()
+    return db.execute(query)
+
+
+def dataframe_to_db(dataframe, tablename='temp'):
+    db = get_db()
+    dataframe.to_sql(
+        name=tablename, 
+        con=db.connection,
+        if_exists='replace')
+    return tablename
