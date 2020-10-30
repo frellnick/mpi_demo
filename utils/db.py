@@ -56,7 +56,7 @@ def close_db(e=None):
 
 
 def init_db():
-    db = get_session()
+    db = get_db()
     Base.metadata.create_all(db)
 
 

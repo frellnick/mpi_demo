@@ -6,16 +6,19 @@ Create indexed view of raw data and appropriate identity view for linkage.
 
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
-from utils.db import query_db, get_session
+from utils.db import query_db, get_db
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+## Prepare identifying information for matching ##
 
 def create_distinct_view(tablename: str) -> pd.DataFrame:
     mapped_columns = _filter_mapped_columns(tablename)
     query = f"SELECT {mapped_columns} FROM {tablename}"
     logging.debug(query)
-    return pd.read_sql_query(query, get_session())
+    return pd.read_sql_query(query, get_db()).drop_duplicates()
 
 
 def _filter_mapped_columns(tablename: str) -> str:
@@ -31,3 +34,13 @@ def _filter_mapped_columns(tablename: str) -> str:
     logging.debug(f'Querying for column names of {tablename}. Returned: {table_columns}')
     mapped_cols = [_rename_column(col) for col in table_columns if col in colmap.keys()]
     return ','.join(mapped_cols)
+
+
+## Prepare valid identity view for matching ##
+
+def create_identity_view(mapped_columns: list) -> pd.DataFrame:
+    fields = ','.join(["'"+col+"'" for col in mapped_columns])
+    query_long = f"SELECT * FROM master_person_long WHERE field in ({fields})"
+    logging.debug(query_long)
+    view_long = query_db(query_long)
+    return view_long.fetchall()

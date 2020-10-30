@@ -11,72 +11,6 @@ from sqlalchemy import \
     (Column, Integer, String, ForeignKey, DateTime, Float, Binary, Text, Sequence)
 from sqlalchemy.orm import relationship
 
-#########################
-### Database MetaData ###
-#########################
-
-# Update this with any changes to underlying model.
-#   Query functions use as a lookup for building routes
-
-classes_tables_keys = {
-    'Institution': {
-        'tablename':'institution',
-        'primary_key': 'institution_id',
-        'parent_key': 'institution_id',  # Column is foreign key for other table
-        'foreign_keys': None,
-    },
-    'Report': {
-        'tablename': 'report',
-        'primary_key': 'report_id',
-        'parent_key': 'report_id',
-        'foreign_keys': 'institution_id',
-    },
-    'Variable': {
-        'tablename': 'variable',
-        'primary_key': 'variable_id',
-        'parent_key': 'variable_id',
-        'foreign_keys': None,
-    },
-    'VariableDescription': {
-        'tablename': 'variable_description',
-        'primary_key': 'variable_id',
-        'parent_key': None,
-        'foreign_keys': 'variable_id',
-    },
-    'ReportNLP': {
-        'tablename': 'report_nlp',
-        'primary_key': 'report_id',
-        'parent_key': None,
-        'foreign_keys': 'report_id'
-    },
-    'VariableNLP': {
-        'tablename': 'variable_nlp',
-        'primary_key': 'variable_id',
-        'parent_key': None,
-        'foreign_keys': 'variable_id'
-    }
-}
-
-# Search function
-def search_table_metadata(**kwargs):
-    # Return appropriate model, self id column, and necessary foreign key to check)
-    active_model_metadata = None
-    
-    keyword = list(kwargs.keys())[0]
-    value = kwargs[keyword]
-    
-    for model in classes_tables_keys.keys():
-        if classes_tables_keys[model][keyword] == value:
-            active_model_metadata = classes_tables_keys[model]
-            active_model = model
-    
-    if active_model_metadata is None: 
-        print('No model found with matching {} = {}'.format(keyword, value))
-        raise ValueError
-
-    active_model_metadata.update(model = active_model)
-    return active_model_metadata
-
 
 ############################
 ### Validation Functions ###
@@ -121,6 +55,15 @@ def update_record(model, id_column, record, session):
 #################
 ###Data Models###
 #################
+
+class MasterPersonLong(Base):
+    __tablename__ = 'master_person_long'
+
+    mpi = Column(String, primary_key=True)
+    field = Column(String, primary_key=True)
+    score = Column(Float)
+    guid = Column(String, primary_key=True)
+    # Composite primary key for table
 
 """
 MODEL EXAMPLES
