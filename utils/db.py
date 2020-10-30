@@ -74,3 +74,5 @@ def dataframe_to_db(dataframe, tablename='temp'):
         con=db.connection,
         if_exists='replace')
     return tablename
+
+    

@@ -6,7 +6,7 @@ Create indexed view of raw data and appropriate identity view for linkage.
 
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
-from utils.db import query_db
+from utils.db import query_db, get_session
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,6 +15,7 @@ def create_distinct_view(tablename: str) -> pd.DataFrame:
     mapped_columns = _filter_mapped_columns(tablename)
     query = f"SELECT {mapped_columns} FROM {tablename}"
     logging.debug(query)
+    return pd.read_sql_query(query, get_session())
 
 
 def _filter_mapped_columns(tablename: str) -> str:
