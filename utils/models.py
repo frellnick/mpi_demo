@@ -61,6 +61,7 @@ class MasterPersonLong(Base):
 
     mpi = Column(String, primary_key=True)
     field = Column(String, primary_key=True)
+    value = Column(String)
     score = Column(Float)
     guid = Column(String, primary_key=True)
     # Composite primary key for table

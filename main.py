@@ -33,10 +33,10 @@ if __name__ == "__main__":
 
     
 
-    dview = create_distinct_view('ushe_students')
-    print(dview.head())
+    # dview = create_distinct_view('ushe_students')
+    # print(dview.head())
 
-    iview = create_identity_view(dview.columns.tolist())
-    print(iview)
+    # iview = create_identity_view(dview.columns.tolist())
+    # print(iview)
 
-    print(link(dview, iview))
+    # print(link(dview, iview))

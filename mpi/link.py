@@ -31,6 +31,7 @@ def _generate_mpi(unmatched: pd.DataFrame):
     linklogger.info(f'Creating {len(unmatched)} identities')
     temp = unmatched.copy()
     temp['mpi'] = temp.mpi.apply(generate_random_mpi)
+    return temp
 
 
 
@@ -44,4 +45,5 @@ def link(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
     """  Link entrypoint.  Controls processes and intermediate data flow """
     matched_frame = _match(t1, t2)
     unmatched = matched_frame[matched_frame['mpi'].isna()]
-    _generate_mpi(unmatched=unmatched)
+    filled = _generate_mpi(unmatched=unmatched)
+    return filled
