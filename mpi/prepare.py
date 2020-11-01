@@ -40,7 +40,8 @@ def _filter_mapped_columns(tablename: str) -> str:
 
 def create_identity_view(mapped_columns: list) -> pd.DataFrame:
     fields = ','.join(["'"+col+"'" for col in mapped_columns])
-    query_long = f"SELECT * FROM master_person_long WHERE field in ({fields})"
-    logging.debug(query_long)
-    view_long = query_db(query_long)
-    return view_long.fetchall()
+    query = f"SELECT * FROM master_person_long WHERE field in ({fields})"
+    logging.debug('Preparing identity view with: \n' + query)
+    iframe = pd.read_sql_query(query, get_db()).drop_duplicates()
+    # Return multi-index dataframe.  Access with df.values for field values, df.score for field scores.
+    return iframe.pivot(index='mpi', columns=['field'], values=['value', 'score'])  

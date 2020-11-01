@@ -45,3 +45,15 @@ colmap = {
 local_identifiers = [
     'student_id_pool'
 ]
+
+blocked_identifiers = [
+    'student_id',
+    'ssn',
+    'ssid',
+]
+
+sneigbour_identifiers = [
+    'first_name',
+    'last_name',
+    'middle_name',
+]

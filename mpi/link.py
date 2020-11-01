@@ -7,7 +7,9 @@ blocking, indexing, comparing, classifying
 """
 
 import pandas as pd
-from utils.generators import generate_random_mpi
+from utils.generators import generate_random_mpi, gen_mpi_insert
+from utils.db import get_session
+from utils.models import MasterPersonLong
 
 import logging
 
@@ -21,29 +23,40 @@ def _match(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
     if len(t2) == 0:
         d1['mpi'] = None
     else:
-        _lookup_existing(t1, t2)
-    return d1
+        d1['mpi'] = _lookup_existing(t1, t2)
+    return d1[d1.mpi.notna()], d1[d1.mpi.isna()]
 
 
 
 def _generate_mpi(unmatched: pd.DataFrame):
     """ Generate MPI for unmatched identities.  Update Master Person Long table """
     linklogger.info(f'Creating {len(unmatched)} identities')
+    unmatched['mpi'] = unmatched.mpi.apply(generate_random_mpi)
     temp = unmatched.copy()
-    temp['mpi'] = temp.mpi.apply(generate_random_mpi)
-    return temp
+    temp.index = temp.mpi
+    temp = temp.drop('mpi', axis=1)
+    ident_inserts = gen_mpi_insert(temp)
+
+    insert_objects = []
+    for iarray in ident_inserts:
+        insert_objects.extend([MasterPersonLong(**kwargs) for kwargs in iarray])
+
+    with get_session() as session:
+        session.bulk_save_objects(insert_objects)
+        session.flush()
+        session.commit()
+    return unmatched
 
 
 
 def _lookup_existing(t1: pd.DataFrame, t2: pd.DataFrame):
-    linklogger.debug('Lookup Existing not implemented')
-    raise NotImplementedError('Lookup Existing not implemented.')    
-
+    linklogger.debug('Lookup Existing not implemented.  Returning all.')
+    # raise NotImplementedError('Lookup Existing not implemented.')
+    return None
 
 
 def link(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
     """  Link entrypoint.  Controls processes and intermediate data flow """
-    matched_frame = _match(t1, t2)
-    unmatched = matched_frame[matched_frame['mpi'].isna()]
+    matched, unmatched = _match(t1, t2)
     filled = _generate_mpi(unmatched=unmatched)
-    return filled
+    return t1, t2
