@@ -47,13 +47,13 @@ local_identifiers = [
 ]
 
 blocked_identifiers = [
-    'student_id',
-    'ssn',
-    'ssid',
+    'student_id_pool',
+    'ssn_pool',
+    'ssid_pool',
 ]
 
-sneigbour_identifiers = [
-    'first_name',
-    'last_name',
-    'middle_name',
+sneighbourhood_identifiers = [
+    'first_name_pool',
+    'last_name_pool',
+    'middle_name_pool',
 ]
