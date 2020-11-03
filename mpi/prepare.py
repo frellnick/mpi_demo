@@ -16,9 +16,12 @@ logger = logging.getLogger(__name__)
 
 def create_distinct_view(tablename: str) -> pd.DataFrame:
     mapped_columns = _filter_mapped_columns(tablename)
-    query = f"SELECT {mapped_columns} FROM {tablename}"
-    logging.debug(query)
-    return pd.read_sql_query(query, get_db()).drop_duplicates()
+    ident_query = f"SELECT {mapped_columns} FROM {tablename}"
+    raw_query = f"SELECT * FROM {tablename}"
+    logging.debug(ident_query)
+    raw = pd.read_sql_query(raw_query, get_db())
+    dview = pd.read_sql_query(ident_query, get_db())
+    return raw, dview
 
 
 def _filter_mapped_columns(tablename: str) -> str:
