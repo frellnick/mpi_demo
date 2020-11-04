@@ -13,6 +13,8 @@ classificationlogger = logging.getLogger(__name__)
 
 def estimate_true(comparisons):
     rexp = len(comparisons.columns)
+    if len(comparisons.columns) > 3:
+        rexp -= 1
     rsum = comparisons.sum(axis=1)
     return comparisons.index[rsum == rexp]
 
@@ -32,5 +34,5 @@ def build_classifier(name, comparisons, match_index=None, **kwargs):
     else:
         clf.fit(comparison_vectors=comparisons)
     
-    classificationlogger.info(f'Successfully reated and fit {name} model.')
+    classificationlogger.info(f'Successfully created and fit {name} model.')
     return clf

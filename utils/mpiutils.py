@@ -10,3 +10,10 @@ def compare_in(colname, searchlist):
 
 def union_frames(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([t1, t2], ignore_index=True)
+
+
+def match_columns(t1: pd.DataFrame, t2: pd.DataFrame) -> tuple:
+    col1 = set(list(t1.columns))
+    col2 = set(list(t2.columns))
+    keep = list(col1.intersection(col2))
+    return t1[keep], t2[keep]

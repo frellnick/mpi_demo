@@ -1,7 +1,16 @@
 # update.py
 
+from utils.mpiutils import union_frames
 import pandas as pd
 import numpy as np
+from utils.db import get_session
+from utils.generators import generate_random_mpi, gen_mpi_insert
+from utils.models import MasterPersonLong
+
+
+import logging
+
+updatelogger = logging.getLogger(__name__)
 
 def _lookup_mpi(ind: int, iview: pd.DataFrame, match_dict):
     if ind in match_dict:
@@ -20,7 +29,35 @@ def append_mpi(dview, iview, matches):
     dview['mpi'] = dview.index.to_numpy()
     match_dict = _multiindex_to_dict(matches)
     dview['mpi'] = dview['mpi'].apply(_lookup_mpi, args=(iview, match_dict))
-    return dview
+    
+    # Split dview into matched and unmatched
+    matched = dview[dview.mpi.notna()]
+    unmatched = dview[dview.mpi.isna()]
+    return matched, unmatched
+
+
+
+def generate_mpi(unmatched: pd.DataFrame):
+    """ Generate MPI for unmatched identities.  Update Master Person Long table """
+    updatelogger.info(f'Creating {len(unmatched)} identities')
+    temp = unmatched.copy()
+    if 'mpi' not in temp.columns:
+        temp['mpi'] = None
+    temp['mpi'] = temp.mpi.apply(generate_random_mpi)
+    temp.index = temp.mpi
+    temp = temp.drop('mpi', axis=1)
+    ident_inserts = gen_mpi_insert(temp)
+
+    insert_objects = []
+    for iarray in ident_inserts:
+        insert_objects.extend([MasterPersonLong(**kwargs) for kwargs in iarray])
+
+    with get_session() as session:
+        session.bulk_save_objects(insert_objects)
+        session.flush()
+        session.commit()
+    return temp
+
 
 
 def expand_match_to_raw(raw, subset, dview, iview, links_pred):
@@ -32,7 +69,10 @@ def expand_match_to_raw(raw, subset, dview, iview, links_pred):
         iview: deduped identity view, processed during linkage
         links_pred: multi-index from classification step
     """
-    dview = append_mpi(dview, iview, links_pred)
+    matched, unmatched = append_mpi(dview, iview, links_pred)
+    unmatched = generate_mpi(unmatched)
+    dview = union_frames(matched, unmatched)
+
     std_columns = [col for col in dview if col != 'mpi']
 
     # Expand deduped matches to full identity table
@@ -41,4 +81,3 @@ def expand_match_to_raw(raw, subset, dview, iview, links_pred):
     # Match mpi with corresponding indices in raw table
     raw['mpi'] = mapped_ids.mpi
     return raw
-

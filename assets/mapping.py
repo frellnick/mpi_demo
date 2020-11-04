@@ -56,4 +56,5 @@ sneighbourhood_identifiers = [
     'first_name_pool',
     'last_name_pool',
     'middle_name_pool',
+    'gender_pool'
 ]
