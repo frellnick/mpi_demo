@@ -30,7 +30,10 @@ def log_setup(loglevel, logfile):
     else:
         level = logging.INFO
     
-    logging.basicConfig(filename=logfile, level=level)
+    logging.basicConfig(
+        format='[%(asctime)s] %(levelname)s: %(message)s',
+        filename=logfile, 
+        level=level)
 
 log_setup(loglevel, logfile)
             
