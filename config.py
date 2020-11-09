@@ -15,6 +15,7 @@ DATABASES = {
     )
 }
 
+IDVIEWTYPE = config('IDVIEWTYPE', default='full')
 
 if DEBUG:
     loglevel = 'DEBUG'

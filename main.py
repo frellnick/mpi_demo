@@ -7,6 +7,34 @@ from ingest import load_file
 from mpi import create_distinct_view, create_identity_view, link
 
 
+def _load_from_db(tablename:str):
+    # Create a view of the data with mapped columns
+    raw, subset = create_distinct_view(tablename=tablename)
+    dview = subset.drop_duplicates()
+
+    # Create a view from the MPI table with valid identity data
+    
+
+
+def _preprocess():
+    pass
+
+def _index():
+    pass
+
+def _compare():
+    pass 
+
+def _classify():
+    pass 
+
+def _evaluate():
+    pass
+
+def _deidentify():
+    pass
+
+
 if __name__ == "__main__":
     import argparse
 

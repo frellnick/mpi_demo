@@ -44,8 +44,6 @@ def generate_mpi(unmatched: pd.DataFrame):
     if 'mpi' not in temp.columns:
         temp['mpi'] = None
     temp['mpi'] = temp.mpi.apply(generate_random_mpi)
-    temp.index = temp.mpi
-    temp = temp.drop('mpi', axis=1)
     ident_inserts = gen_mpi_insert(temp)
 
     insert_objects = []
@@ -70,8 +68,12 @@ def expand_match_to_raw(raw, subset, dview, iview, links_pred):
         links_pred: multi-index from classification step
     """
     matched, unmatched = append_mpi(dview, iview, links_pred)
+    updatelogger.info(f"Matched {len(matched)} records.  Unmatched {len(unmatched)} records.")
     unmatched = generate_mpi(unmatched)
+    updatelogger.debug(f"Unmatched frame showing {len(unmatched[unmatched.mpi.notna()])} \
+        of {len(unmatched)} MPI generated.")
     dview = union_frames(matched, unmatched)
+    updatelogger.info(f"Union dview frame shows {len(dview[dview.mpi.notna()])} mpi.")
 
     std_columns = [col for col in dview if col != 'mpi']
 
@@ -80,4 +82,5 @@ def expand_match_to_raw(raw, subset, dview, iview, links_pred):
 
     # Match mpi with corresponding indices in raw table
     raw['mpi'] = mapped_ids.mpi
-    return raw
+    updatelogger.info(f'Final output {len(raw[raw.mpi.notna()])} of {len(raw)} records assigned MPI')
+    return raw, matched, unmatched
