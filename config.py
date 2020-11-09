@@ -16,6 +16,7 @@ DATABASES = {
 }
 
 IDVIEWTYPE = config('IDVIEWTYPE', default='full')
+CLASSIFIER = config('CLASSIFIER', default='logistic')
 
 if DEBUG:
     loglevel = 'DEBUG'
