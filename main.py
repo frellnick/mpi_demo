@@ -1,16 +1,17 @@
 #main.py
 
+from utils import match_columns
 from utils.db import init_db
 from config import CLASSIFIER
 
 from ingest import load_file
-from mpi import create_distinct_view, create_identity_view,
-from mpi.link import (
-    is_match_available, clean_raw, match_dtype,
-    build_indexer, match_columns,
-    build_comparator, estimate_true, build_classifier,
-    )
-from mpi.update import generate_mpi
+from mpi.prepare import create_distinct_view, create_identity_view
+from mpi.preprocess import clean_raw, match_dtype
+from mpi.link import is_match_available
+from mpi.index import build_indexer
+from mpi.compare import build_comparator
+from mpi.classify import build_classifier, estimate_true
+from mpi.update import generate_mpi, expand_match_to_raw
 from mpi.evaluate import simple_evaluation
 
 import logging 
@@ -65,7 +66,7 @@ def _preprocess(tablename:str):
     source_data, id_data = match_dtype(datapack['dview'], datapack['ivalue'])
     datapack['subset'] = clean_raw(datapack['subset'])
     datapack['source_clean'] = clean_raw(source_data)
-    datapack['id_clean'] = clean_raw(id_data)
+    datapack['id_clean'] = clean_raw(id_data).reset_index(level='mpi')
 
     return datapack
 
@@ -116,6 +117,20 @@ def _evaluate(datapack:dict):
 
 
 
+def _update(datapack:dict):
+    output, matched, unmatched = expand_match_to_raw(
+        raw=datapack['raw'],
+        subset=datapack['subset'],
+        source_clean=datapack['source_clean'],
+        id_clean=datapack['id_clean'],
+        links_pred=datapack['predictions'],
+    )
+    datapack['output'] = output
+    datapack['matched'] = matched
+    datapack['unmatched'] = unmatched
+
+
+
 def _deidentify():
     pass
 
@@ -126,6 +141,9 @@ def run_mpi(tablename:str):
     _compare(datapack=datapack)
     _classify(datapack=datapack)
     _evaluate(datapack=datapack)
+    _update(datapack=datapack)
+
+    return datapack
 
 
 
