@@ -4,7 +4,7 @@ Database
     Datase parameters must be set in config.py or directly in app.py
 """
 
-
+import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from contextlib import contextmanager
@@ -16,7 +16,7 @@ import logging
 from app_global import g
 
 
-def get_db():
+def get_db() -> sqlalchemy.engine:
     """
     Returns current database connection.  If connection not present,
     initiates connection to configured database.  Default is non-authenticated SQL.
