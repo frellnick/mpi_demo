@@ -1,5 +1,5 @@
 """
-Model mapping for DataDictionary
+Model mapping for All Databases
 Setup notes:
 https://docs.sqlalchemy.org/en/13/orm/tutorial.html
 """
@@ -106,3 +106,8 @@ class VariableDescription(Base):
 
 # rep_nlp_seq = Sequence('seq_nlp_seq')  # PostgreSQL, Oracle only
 """
+
+################################
+### NOSQL (MongoDB) Template ###
+################################
+

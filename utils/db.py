@@ -15,7 +15,9 @@ import logging
 
 from app_global import g
 
-
+###############################
+### SQL Database Connection ###
+###############################
 def get_db() -> sqlalchemy.engine:
     """
     Returns current database connection.  If connection not present,
@@ -60,7 +62,7 @@ def init_db():
     Base.metadata.create_all(db)
 
 
-## DB Utils ##
+## SQL DB Utils ##
 
 def query_db(query):
     db = get_db()
@@ -75,4 +77,28 @@ def dataframe_to_db(dataframe, tablename='temp'):
         if_exists='replace')
     return tablename
 
-    
+
+######################
+### NoSQL Mongo DB ###
+######################
+
+from pymongo import MongoClient
+
+def get_mongo() -> MongoClient:
+    """
+    Creates MongoDB connection connects to database specified in dbname.
+    """
+    db_uri = DATABASES['nosql']
+
+    db_logger = logging.getLogger(__name__ + '.getdb')
+    if not hasattr(g, 'mongoclient'):
+        db_logger.info('MongoDB connection not found. Attempting connection to {}.'.format(db_uri))
+        try:
+            g.mongoclient = MongoClient(db_uri)
+        except:
+            db_logger.error('Could not establish connection.  Aborting.')
+            raise ConnectionError
+
+    return g.mongoclient
+
+

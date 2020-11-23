@@ -12,5 +12,5 @@ def test_config(config):
     assert (config.DEBUG == True) or (config.DEBUG == False)
 
     dbconfig = config.DATABASES
-    assert SQL_URI in dbconfig.keys()
-    assert NOSQL_URI in dbconfig.keys()
+    assert 'default' in dbconfig.keys()
+    assert 'nosql' in dbconfig.keys()
