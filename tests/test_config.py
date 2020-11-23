@@ -9,6 +9,8 @@ def config():
 
 
 def test_config(config):
-    assert config.DATABASES is not None 
-
     assert (config.DEBUG == True) or (config.DEBUG == False)
+
+    dbconfig = config.DATABASES
+    assert SQL_URI in dbconfig.keys()
+    assert NOSQL_URI in dbconfig.keys()
