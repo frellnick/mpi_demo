@@ -5,13 +5,17 @@ from decouple import config
 import logging
 
 
-DEBUG = config('DEBUG', default=True)
+DEBUG = config('DEBUG', default=True, cast=bool)
 logfile = config('LOGFILE', default=None)
 
 DATABASES = {
     'default': config(
-        'DATABASE_URI',
+        'SQL_URI',
         default='sqlite:///test.sqlite3'
+    ),
+    'nosql': config(
+        'NOSQL_URI',
+        default=None
     )
 }
 
