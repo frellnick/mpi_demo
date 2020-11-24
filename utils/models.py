@@ -111,3 +111,65 @@ class VariableDescription(Base):
 ### NOSQL (MongoDB) Template ###
 ################################
 
+
+mongo_model = {
+    "mpi": str,
+    "sources": [
+        {
+            "guid": int,
+            "fields": [
+                {
+                    "fieldname": str,
+                    "value": str,
+                }
+            ]
+        }
+    ]
+}
+
+
+## NoSQL Utility ##
+class Validator():
+    def __init__(self, expected=None, query=None):
+        self.expected = expected
+        self.query = query
+
+    def _check_expected(self, x):
+        if self.expected == 'any':
+            return x is not None 
+        return x == self.expected
+
+    def _query(self, data):
+        def _int(x):
+            try:
+                return int(x)
+            except:
+                return x
+        val = data
+        for cond in self.query.split('.'):
+            try:
+                val = val[_int(cond)]
+            except Exception as e:
+                print("Failed query: ", val, cond, e)
+        return type(val)  # type validation
+
+    def test(self, data):
+        result = self._check_expected(self._query(data))
+        if result == False:
+            print("failed: ", self.query)
+        return result
+
+# Define model validators for each field
+validators = (
+    Validator(query='mpi', expected=str),
+    Validator(query='sources', expected=list),
+    Validator(query='sources.0.guid', expected=int),
+    Validator(query='sources.0.fields', expected=list),
+    Validator(query='sources.0.fields.0.fieldname', expected=str),
+    Validator(query='sources.0.fields.0.value', expected='any')
+)
+
+def validate_model(data, validators=validators):
+    def _run_validator(validator, data=data):
+        return validator.test(data)
+    return sum(list(map(_run_validator, validators))) == len(validators)
