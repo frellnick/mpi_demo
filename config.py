@@ -19,6 +19,8 @@ DATABASES = {
     )
 }
 
+MPIARCH = config('MPIARCH', default='sql')
+
 IDVIEWTYPE = config('IDVIEWTYPE', default='full')
 CLASSIFIER = config('CLASSIFIER', default='logistic')
 

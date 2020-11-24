@@ -5,8 +5,7 @@ import pandas as pd
 import numpy as np
 from utils.db import get_session
 from utils.generators import generate_random_mpi, gen_mpi_insert
-from utils.models import MasterPersonLong
-
+from .writers import write_mpi_data
 
 import logging
 
@@ -55,18 +54,6 @@ def generate_mpi(unmatched: pd.DataFrame):
         temp['mpi'] = None
     temp['mpi'] = temp.mpi.apply(generate_random_mpi)
     return temp
-
-
-
-def write_mpi_data(ident_inserts):
-    insert_objects = []
-    for iarray in ident_inserts:
-        insert_objects.extend([MasterPersonLong(**kwargs) for kwargs in iarray])
-
-    with get_session() as session:
-        session.bulk_save_objects(insert_objects)
-        session.flush()
-        session.commit()
 
 
 
