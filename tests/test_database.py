@@ -33,8 +33,8 @@ def test_write_destroy_mongodb():
 
 def test_model_validation():
 
-    good = {'mpi': '001', 'sources': [{'guid': 111, 'fields': [{'fieldname': 'field1', 'value': 100}]}]}
-    bad = {'mpi': '001', 'sources': [{'guid': None, 'fields': [{'fieldname': 'field1', 'value': 100}]}]}
+    good = {'mpi': '001', 'sources': [{'guid': 111, 'score': 0.99, 'fields': [{'fieldname': 'field1', 'value': 100}]}]}
+    bad = {'mpi': '001', 'sources': [{'guid': None, 'score': 1.00, 'fields': [{'fieldname': 'field1', 'value': 100}]}]}
 
     assert validate_model(data=good) == True 
     assert validate_model(data=bad) == False

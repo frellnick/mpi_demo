@@ -26,7 +26,7 @@ def generate_random_mpi(*args):
 
 insertGenerators = {}
 
-def _prepare_sql_inserts(mpi, valdict):
+def _prepare_sql_inserts(index, valdict):
     """
     Build a mpi-field-value-guid insert for each key in an raw vector
     """
@@ -34,7 +34,7 @@ def _prepare_sql_inserts(mpi, valdict):
     for key in valdict:
         inserts.append(
             {
-                'mpi': mpi,
+                'mpi': valdict['mpi'],
                 'guid': valdict['guid'],
                 'field': key,
                 'value': valdict[key]
@@ -45,14 +45,12 @@ insertGenerators['sql'] = _prepare_sql_inserts
 
 
 
-def _prepare_nosql_inserts(mpi, valdict):
+def _prepare_nosql_inserts(index, valdict):
     """
     Return full data in form for serializtion into NoSQL schema.
     """
-    return {
-        'mpi': mpi,
-        'data': valdict, 
-    }
+    valdict.pop('index')
+    return valdict
 insertGenerators['nosql'] = _prepare_nosql_inserts
 
 
@@ -61,12 +59,9 @@ def gen_mpi_insert(iinfo: pd.DataFrame):
     temp = iinfo.copy()
     gutillogger.debug(f"Generating inserts for dataframe of len {len(temp)}.  Columns {temp.columns}")
     gutillogger.debug(f"Example MPI: {temp.mpi[0:5]}")
-    if 'mpi' in temp.columns:
-        temp.index = temp.mpi
-        temp = temp.drop('mpi', axis=1)
 
     prepare_inserts = insertGenerators[MPIARCH]
 
     idict = temp.to_dict('index')
-    for mpi in idict:
-        yield prepare_inserts(mpi, idict[mpi])
+    for index in idict:
+        yield prepare_inserts(index, idict[index])

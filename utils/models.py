@@ -122,7 +122,8 @@ mongo_model = {
                     "fieldname": str,
                     "value": str,
                 }
-            ]
+            ],
+            "score": float,
         }
     ]
 }
@@ -159,6 +160,7 @@ class Validator():
             print("failed: ", self.query)
         return result
 
+
 # Define model validators for each field
 validators = (
     Validator(query='mpi', expected=str),
@@ -166,23 +168,57 @@ validators = (
     Validator(query='sources.0.guid', expected=int),
     Validator(query='sources.0.fields', expected=list),
     Validator(query='sources.0.fields.0.fieldname', expected=str),
-    Validator(query='sources.0.fields.0.value', expected='any')
+    Validator(query='sources.0.fields.0.value', expected='any'),
+    Validator(query='sources.0.score', expected=float)
 )
 
+
 def validate_model(data, validators=validators):
+    
     def _run_validator(validator, data=data):
         return validator.test(data)
+
     return sum(list(map(_run_validator, validators))) == len(validators)
 
 
 # Build a serializer to convert from raw vector
 
 class NoSQLSerializer():
+
     def __init__(self, validator=validate_model):
         self.validator = validate_model
 
+
+    def _check_raw(self, raw):
+        assert 'mpi' in raw, 'Cannot marshal. Missing MPI in expected key group.'
+        assert 'guid' in raw, 'Cannot marshal.  Missing GUID in expected key group.'
+        return raw
+
+
     def _marshal(self, raw):
-        pass
+        def _is_field(x):
+            return x not in ['mpi', 'guid', 'score']
+
+        mpi = raw['mpi']
+        guid = raw['guid']
+        if 'score' in raw:
+            score = raw['score']
+        else:
+            score = 0.00
+        return {
+            'mpi': mpi,
+            'sources': [
+                {
+                    'guid': guid,
+                    'score': score,
+                    'fields': [
+                        {'fieldname': key, 'value': raw[key]} for key in raw if _is_field(key)]
+                }
+            ]
+        }
+
 
     def __call__(self, raw):
-        return self._marshal(raw)
+        return self._marshal(
+            self._check_raw(raw)
+            )
