@@ -20,8 +20,7 @@ def test_mongo_client():
 
 
 def test_write_destroy_mongodb():
-    mdb = get_mongo()
-    test = mdb.test
+    test = get_mongo('test')
     collection = test['temp']
 
     inserted_id = collection.insert_one({'test': 10}).inserted_id

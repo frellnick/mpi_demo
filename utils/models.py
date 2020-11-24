@@ -173,3 +173,16 @@ def validate_model(data, validators=validators):
     def _run_validator(validator, data=data):
         return validator.test(data)
     return sum(list(map(_run_validator, validators))) == len(validators)
+
+
+# Build a serializer to convert from raw vector
+
+class NoSQLSerializer():
+    def __init__(self, validator=validate_model):
+        self.validator = validate_model
+
+    def _marshal(self, raw):
+        pass
+
+    def __call__(self, raw):
+        return self._marshal(raw)

@@ -84,9 +84,11 @@ def dataframe_to_db(dataframe, tablename='temp'):
 
 from pymongo import MongoClient
 
-def get_mongo() -> MongoClient:
+def get_mongo(dbname='mpi') -> MongoClient:
     """
     Creates MongoDB connection connects to database specified in dbname.
+    Parameters:
+        dbname (str): name of database to connect to
     """
     db_uri = DATABASES['nosql']
 
@@ -99,6 +101,6 @@ def get_mongo() -> MongoClient:
             db_logger.error('Could not establish connection.  Aborting.')
             raise ConnectionError
 
-    return g.mongoclient
+    return g.mongoclient[dbname]
 
 
