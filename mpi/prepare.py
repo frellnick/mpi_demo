@@ -15,7 +15,7 @@ preplogger = logging.getLogger(__name__)
 
 ## Prepare identifying information for matching ##
 
-def create_distinct_view(tablename: str) -> pd.DataFrame:
+def create_data_view(tablename: str) -> pd.DataFrame:
     mapped_columns = _filter_mapped_columns(tablename)
     ident_query = f"SELECT {mapped_columns} FROM {tablename}"
     raw_query = f"SELECT * FROM {tablename}"
@@ -59,8 +59,8 @@ registry_idview['full'] = full_id_view
 
 
 # Route Function - Looks up IDVIEW fn listed in settings.ini and returns view from mapped columns
-def create_identity_view(mapped_columns: list) -> pd.DataFrame:
+def create_identity_view(*args, **kwargs) -> pd.DataFrame:
     preplogger.info(f'Using IDVIEWTYPE: {IDVIEWTYPE}')
     fn = registry_idview[IDVIEWTYPE]
-    return fn(mapped_columns)
+    return fn(*args, **kwargs)
 
