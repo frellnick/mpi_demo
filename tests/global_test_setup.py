@@ -1,23 +1,27 @@
 from config import logfile
-import datetime
+from time import strftime,gmtime
+ 
+ 
+ 
+
 
 
 class FileLogger():
     def __init__(self, logfile):
         self.logfile = logfile
-        self._write_to_file(f'Log Start {datetime.datetime.now()}')
+        self._write_to_file(f'Log Start', name=__name__)
 
 
-    def _write_to_file(self, message):
+    def _write_to_file(self, message, name):
         with open(logfile, 'a+') as f:
-            timestamp = f'{datetime.datetime.now()}'
-            f.writelines(f'{timestamp} {message} \n')
+            timestamp = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+            f.writelines(f'{timestamp} {name} {message} \n')
 
-    def info(self, message):
-        self._write_to_file(f'INFO: {message}')
+    def info(self, message, name='und'):
+        self._write_to_file(f'INFO: {message}', name)
 
-    def debug(self, message):
-        self._write_to_file(f'DEBUG: {message}')
+    def debug(self, message, name='und'):
+        self._write_to_file(f'DEBUG: {message}', name)
 
 
 testlogger = FileLogger(logfile=logfile)

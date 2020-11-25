@@ -104,3 +104,9 @@ def get_mongo(dbname='mpi') -> MongoClient:
     return g.mongoclient[dbname]
 
 
+def init_mongo():
+    db = get_mongo()
+    # Create raw collection and MPI index
+    db.mpi.raw.create_index('mpi', {'unique': True})
+
+

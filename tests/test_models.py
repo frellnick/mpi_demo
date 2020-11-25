@@ -25,6 +25,6 @@ def test_nosqlserializer(test_data):
     out = []
     for row in test_data:
         out.append(ser(row))
-    testlogger.info(out)
+    testlogger.debug(out, __name__)
     for x in out:
         assert x is not None

@@ -6,14 +6,24 @@ from config import MPIARCH
 
 from pymongo import InsertOne, UpdateOne
 
+
 writers = {}
+
+
+def write_mpi_data(ident_inserts, dbtype=None, update=False):
+    if dbtype is not None:
+        writer = writers[dbtype]
+    else:
+        writer = writers[MPIARCH]
+    writer(ident_inserts, update)
+
 
 ##################
 ### SQL Writer ###
 ##################
 
 
-def _write_mpi_sql(ident_inserts):
+def _write_mpi_sql(ident_inserts, update=False):
     insert_objects = []
     for iarray in ident_inserts:
         insert_objects.extend([MasterPersonLong(**kwargs) for kwargs in iarray])
@@ -22,6 +32,7 @@ def _write_mpi_sql(ident_inserts):
         session.flush()
         session.commit()
 writers['sql'] = _write_mpi_sql
+
 
 
 ####################
@@ -34,19 +45,22 @@ class MongoInsert():
     def __call__(self, data):
         return InsertOne(data)
 
-class MongoUpsert():
+class MongoUpdate():
     def __init__(self):
         pass
     def __call__(self, data):
-        ## TODO: Upsert Logic and figuring out where the aggregation happens.
+        ## TODO: Update Logic and figuring out where the aggregation happens.
         ## Only ever add a whole GUID, maybe not a terrible problem.
-        return UpdateOne(data['mpi'], data['mpi']['sources'], upsert=True)  ## REQUIRES FIX TO ADD STUFF TO LIST
+        return UpdateOne(
+            {'mpi': data['mpi']}, 
+            {"$addToSet": {'sources': data['sources']}},
+            )
 
 
-def _write_mpi_nosql(ident_inserts, upsert=False):
+def _write_mpi_nosql(ident_inserts, update=False):
     Serializer = NoSQLSerializer()
-    if upsert:
-        operation = MongoUpsert()
+    if update:
+        operation = MongoUpdate()
     else:
         operation = MongoInsert()
 
@@ -55,12 +69,4 @@ def _write_mpi_nosql(ident_inserts, upsert=False):
         insert_objects.append(operation(Serializer(iarray)))
     db = get_mongo('mpi')
     db.raw.bulk_write(insert_objects)
-
-
 writers['nosql'] = _write_mpi_nosql
-
-
-
-def write_mpi_data(ident_inserts):
-    writer = writers[MPIARCH]
-    writer(ident_inserts)

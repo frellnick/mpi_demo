@@ -30,4 +30,4 @@ def test_data(mpi_vectors=mpi_vectors):
 def test_mpi_insert(test_data):
     inserts = gen_mpi_insert(test_data)
     for i in inserts:
-        testlogger.info(json.dumps(i))
+        testlogger.debug(json.dumps(i), __name__)
