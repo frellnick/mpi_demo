@@ -22,8 +22,8 @@ mpi_vectors = [
 @pytest.fixture
 def test_data(mpi_vectors=mpi_vectors):
     raw_df = pd.DataFrame.from_records(mpi_vectors)
-    dataframe_to_db(raw_df, 'mpi_vectors_test')
-    query = f"SELECT * FROM mpi_vectors_test"
+    dataframe_to_db(raw_df, 'mpi_vectors')
+    query = f"SELECT * FROM mpi_vectors"
     return pd.read_sql_query(query, get_db())
 
 

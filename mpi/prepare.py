@@ -49,14 +49,12 @@ registry_idview = {}
 
 
 # FULL: Returns 
-def full_id_view(mapped_columns:list) -> pd.DataFrame:
-    fields = ','.join(["'"+col+"'" for col in mapped_columns])
-    query = f"SELECT * FROM master_person_long WHERE field in ({fields})"
+def full_id_view(*args, **kwargs) -> pd.DataFrame:
+    query = "SELECT * FROM mpi_vectors"
     preplogger.debug('Preparing identity view with: \n' + query)
     iframe = pd.read_sql_query(query, get_db()).drop_duplicates()
-
     # Return multi-index dataframe.  Access with df.values for field values, df.score for field scores.
-    return iframe.pivot(index='mpi', columns=['field'], values=['value', 'score'])
+    return iframe
 registry_idview['full'] = full_id_view
 
 
