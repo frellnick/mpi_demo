@@ -69,4 +69,6 @@ def _write_mpi_nosql(ident_inserts, update=False):
         insert_objects.append(operation(Serializer(iarray)))
     db = get_mongo('mpi')
     db.raw.bulk_write(insert_objects)
+    # Create MPI index if not done already
+    db.raw.create_index('mpi')
 writers['nosql'] = _write_mpi_nosql

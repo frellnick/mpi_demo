@@ -14,7 +14,7 @@ import pytest
 
 @pytest.fixture
 def test_data():
-    query = f"SELECT * FROM mpi_vectors_test"
+    query = f"SELECT * FROM mpi_vectors"
     return gen_mpi_insert(
         pd.read_sql_query(query, get_db())
     )

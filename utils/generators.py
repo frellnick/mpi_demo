@@ -49,7 +49,8 @@ def _prepare_nosql_inserts(index, valdict):
     """
     Return full data in form for serializtion into NoSQL schema.
     """
-    valdict.pop('index')
+    if index in valdict:
+        valdict.pop('index')
     return valdict
 insertGenerators['nosql'] = _prepare_nosql_inserts
 

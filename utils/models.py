@@ -11,6 +11,9 @@ from sqlalchemy import \
     (Column, Integer, String, ForeignKey, DateTime, Float, Binary, Text, Sequence)
 from sqlalchemy.orm import relationship
 
+import logging
+mlog = logging.getLogger(__name__)
+
 
 ############################
 ### Validation Functions ###
@@ -151,19 +154,19 @@ class Validator():
             try:
                 val = val[_int(cond)]
             except Exception as e:
-                print("Failed query: ", val, cond, e)
+                mlog.error(f"Failed query: {val}, {cond}, {e}")
         return type(val)  # type validation
 
     def test(self, data):
         result = self._check_expected(self._query(data))
         if result == False:
-            print("failed: ", self.query)
+            mlog.error(f"failed: { self.query}")
         return result
 
 
 # Define model validators for each field
 validators = (
-    Validator(query='mpi', expected=str),
+    Validator(query='mpi', expected='any'),
     Validator(query='sources', expected=list),
     Validator(query='sources.0.guid', expected=int),
     Validator(query='sources.0.fields', expected=list),
@@ -178,6 +181,7 @@ def validate_model(data, validators=validators):
     def _run_validator(validator, data=data):
         return validator.test(data)
 
+    # mlog.debug(f"{list(map(_run_validator, validators))}, {len(validators)}")
     return sum(list(map(_run_validator, validators))) == len(validators)
 
 
@@ -188,6 +192,12 @@ class NoSQLSerializer():
     def __init__(self, validator=validate_model):
         self.validator = validate_model
 
+
+    def _validate_doc(self, document):
+        if self.validator(document):
+            return document
+        else:
+            raise ValueError(f'Invalid document created during serialization.  Check:\n{document}')
 
     def _check_raw(self, raw):
         assert 'mpi' in raw, 'Cannot marshal. Missing MPI in expected key group.'
@@ -219,6 +229,6 @@ class NoSQLSerializer():
 
 
     def __call__(self, raw):
-        return self._marshal(
-            self._check_raw(raw)
-            )
+        return self._validate_doc(
+            self._marshal(self._check_raw(raw))
+        ) 
