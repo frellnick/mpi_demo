@@ -3,7 +3,7 @@
 from utils.mpiutils import union_frames
 import pandas as pd
 import numpy as np
-from utils.db import get_session
+from utils.db import get_session, get_mongo
 from utils.generators import generate_random_mpi, gen_mpi_insert
 from .writers import write_mpi_data
 
@@ -12,7 +12,20 @@ import logging
 updatelogger = logging.getLogger(__name__)
 
 
+###############################
+### Update MPI Vector Table ###
+###############################
 
+
+def update_mpi_vector_table():
+    pass
+
+
+
+
+##################################
+### Lookup & Generation of MPI ###
+##################################
 
 def _lookup_mpi(ind: int, id_clean: pd.DataFrame, match_dict):
     if ind in match_dict:

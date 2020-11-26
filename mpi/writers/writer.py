@@ -53,11 +53,17 @@ class MongoUpdate():
         ## Only ever add a whole GUID, maybe not a terrible problem.
         return UpdateOne(
             {'mpi': data['mpi']}, 
-            {"$addToSet": {'sources': data['sources']}},
+            {"$addToSet": {'sources': data['sources'][0]}},
             )
 
 
 def _write_mpi_nosql(ident_inserts, update=False):
+    def _check_index_exists(name):
+        for ind in db.raw.list_indexes():
+            if name in ind['name']:
+                return True
+        return False
+
     Serializer = NoSQLSerializer()
     if update:
         operation = MongoUpdate()
@@ -69,6 +75,8 @@ def _write_mpi_nosql(ident_inserts, update=False):
         insert_objects.append(operation(Serializer(iarray)))
     db = get_mongo('mpi')
     db.raw.bulk_write(insert_objects)
+
     # Create MPI index if not done already
-    db.raw.create_index('mpi')
+    if not _check_index_exists('mpi'):
+        db.raw.create_index('mpi', unique=True)
 writers['nosql'] = _write_mpi_nosql
