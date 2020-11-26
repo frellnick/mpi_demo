@@ -3,9 +3,10 @@
 from utils.mpiutils import union_frames
 import pandas as pd
 import numpy as np
-from utils.db import get_session, get_mongo
+from utils.db import get_session, get_mongo, yield_mpi_document_batch, dataframe_to_db
 from utils.generators import generate_random_mpi, gen_mpi_insert, create_mpi_vector
 from .writers import write_mpi_data
+from assets.mapping import colmap
 
 import logging
 
@@ -17,8 +18,33 @@ updatelogger = logging.getLogger(__name__)
 ###############################
 
 
+def _create_mpi_vectors(*args, **kwargs) -> list:
+    doc_chunks = yield_mpi_document_batch()
+    mpi_vectors = []
+    for chunk in doc_chunks:
+        for doc in chunk:
+            new_vectors = create_mpi_vector(doc)
+            mpi_vectors.extend(new_vectors)
+
+    return mpi_vectors
+
+
+
 def update_mpi_vector_table():
-    pass
+    """
+    Replace MPI Vectors table with new MPI vectors.
+        TODO: Alter find to only look for inserted or updated ids*
+        TODO: Alter write to only truncate/add MPIs returned from previous step
+        NOTE: mpi is a indexed, constrained unique.  1 _id === 1 mpi
+    """
+    vectors = _create_mpi_vectors()
+    columns = set(colmap.values())
+    columns.add('mpi')
+    columns.add('freq_score')
+    columns.remove('guid')
+    df = pd.DataFrame.from_records(data=vectors, columns = columns)
+    dataframe_to_db(df, 'mpi_vectors')
+
 
 
 
