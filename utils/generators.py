@@ -4,6 +4,8 @@
 import random
 import time
 import pandas as pd
+from itertools import combinations
+import math
 
 from config import MPIARCH
 
@@ -66,3 +68,79 @@ def gen_mpi_insert(iinfo: pd.DataFrame):
     idict = temp.to_dict('index')
     for index in idict:
         yield prepare_inserts(index, idict[index])
+
+
+##############################
+### NoSQL Vector Generator ###
+##############################
+
+
+## Frequency Functions
+
+def mean(proportions):
+    return sum(proportions) / len(proportions)
+
+def geomean(proportions):
+    return math.prod(proportions) ** (1/len(proportions))
+
+
+## Vectorizer
+
+def create_mpi_vector(mdoc:dict, freqfn=geomean) -> list:
+    
+    def _extract_fields(mdoc:dict) -> list:
+        fields = []
+        for s in mdoc['sources']:
+            fields.extend(s['fields'])
+        return fields
+    
+    
+    def _convert_dict_to_tuple(d:dict)->tuple:
+        return tuple(d.values())
+    
+    
+    def _index_and_count_values(values:tuple)->dict:
+        index = {}
+        counts = {}
+        for i, v in enumerate(values):
+            if v[0] in index:
+                index[v[0]].append(i)
+            else:
+                index[v[0]] = [i]
+            if v[1] in counts:
+                counts[v[1]] += 1
+            else:
+                counts[v[1]] = 1
+        return index, counts
+        
+    
+    def _build_vectors(values, index, counts, freqfn):
+        def _is_valid_vect(c:tuple) -> bool:
+            vnames = [item[0] for item in c]
+            return len(set(vnames)) == len(vnames)
+        
+        def _consolidate_tuples_to_dict(c:tuple) -> dict:
+            res = {}
+            [res.update({f[0]:f[1]}) for f in c]
+            return res
+        
+        def _calc_freq_score(vect:dict, counts:dict, index:dict, freqfn) -> float:
+            proportions = []
+            for key in vect:
+                proportions.append(
+                    counts[vect[key]] / len(index[key])
+                )
+            return freqfn(proportions)
+        
+        fnames = tuple(index.keys())
+        cmb = combinations(set(values), len(fnames))
+        vectors = [_consolidate_tuples_to_dict(c) for c in cmb if _is_valid_vect(c)]
+        scored_vectors = [(v, _calc_freq_score(v, counts, index, freqfn)) for v in vectors]
+        return scored_vectors
+    
+    
+    del(mdoc['_id'])
+    values = [_convert_dict_to_tuple(d) for d in _extract_fields(mdoc)]
+    index, counts = _index_and_count_values(values)
+    mvects = _build_vectors(values=values, index=index, counts=counts, freqfn=freqfn)
+    return mvects

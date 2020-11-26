@@ -4,7 +4,7 @@ from utils.mpiutils import union_frames
 import pandas as pd
 import numpy as np
 from utils.db import get_session, get_mongo
-from utils.generators import generate_random_mpi, gen_mpi_insert
+from utils.generators import generate_random_mpi, gen_mpi_insert, create_mpi_vector
 from .writers import write_mpi_data
 
 import logging
