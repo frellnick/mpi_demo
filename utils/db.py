@@ -110,3 +110,23 @@ def init_mongo():
     db.mpi.raw.create_index('mpi', {'unique': True})
 
 
+
+## NoSQL DB utils
+def yield_mpi_document_batch(chunk_size=10):
+    """
+    Generator to yield chunks from MongoDB
+    :param chunk_size: int, number of records to return per chunk
+    :return: list
+    """
+    
+    chunk = []
+    coll = get_mongo().raw
+    cursor = coll.find({}, batch_size=chunk_size)
+    
+    for i, doc in enumerate(cursor):
+        if (i % chunk_size == 0) and (i > 0):
+            yield chunk
+            del chunk[:]
+        chunk.append(doc)
+    yield chunk
+
