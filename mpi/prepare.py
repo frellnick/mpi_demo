@@ -85,7 +85,7 @@ def full_id_view(*args, **kwargs) -> pd.DataFrame:
 
     if 'index' in iframe.columns:
         iframe.drop('index', axis=1, inplace=True)
-    return iframe.dropna(axis=1)
+    return iframe.dropna(axis=1, how='all')
 registry_idview['full'] = full_id_view
 
 

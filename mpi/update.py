@@ -50,13 +50,18 @@ def update_mpi_vector_table():
         TODO: Alter write to only truncate/add MPIs returned from previous step
         NOTE: mpi is a indexed, constrained unique.  1 _id === 1 mpi
     """
+    updatelogger.info("Starting MPI Vector table update.")
+    
     vectors = _create_mpi_vectors()
+    updatelogger.info(f"Generated {len(vectors)} vectors.")
+
     columns = _detect_add_column_names(
         colmap=colmap,
         raw_columns=list(vectors[0].keys()),
         optional=['mpi', 'freq_score'],
         exclude=['guid']
     )
+    
     df = pd.DataFrame.from_records(data=vectors, columns = columns)
     dataframe_to_db(df, 'mpi_vectors')
 
