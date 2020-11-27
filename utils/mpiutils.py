@@ -15,8 +15,12 @@ def union_frames(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([t1, t2], ignore_index=True)
 
 
-def match_columns(t1: pd.DataFrame, t2: pd.DataFrame) -> tuple:
-    col1 = set(list(t1.columns))
-    col2 = set(list(t2.columns))
-    keep = list(col1.intersection(col2))
+def get_column_intersect(dfa: pd.DataFrame, dfb: pd.DataFrame) -> list:
+    c1 = set(dfa.columns.to_list())
+    c2 = set(dfb.columns.to_list())
+    return list(c1.intersection(c2))
+
+
+def match_dataframe_columns(t1: pd.DataFrame, t2: pd.DataFrame) -> tuple:
+    keep = get_column_intersect(t1, t2)
     return t1[keep], t2[keep]

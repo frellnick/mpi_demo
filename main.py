@@ -54,8 +54,8 @@ def _preprocess(tablename:str):
         else:
             return iview
     def _get_scores(iview):
-        if hasattr(iview, 'score'):
-            return iview.score
+        if hasattr(iview, 'freq_score'):
+            return iview.freq_score
 
     datapack = _load_from_db(tablename=tablename)
     _check_match(datapack=datapack)

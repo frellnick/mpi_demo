@@ -29,12 +29,14 @@ def _create_mpi_vectors(*args, **kwargs) -> list:
     return mpi_vectors
 
 
-def _detect_add_column_names(colmap: dict, raw_columns:list, optional:list):
+def _detect_add_column_names(colmap: dict, raw_columns:list, optional:list, exclude:list):
     columns = set(colmap.values())
     for name in optional:
         columns.add(name)
     for name in raw_columns:
         columns.add(name)
+    for name in exclude:
+        columns.remove(name)
     return columns
 
 
@@ -49,7 +51,8 @@ def update_mpi_vector_table():
     columns = _detect_add_column_names(
         colmap=colmap,
         raw_columns=list(vectors[0].keys()),
-        optional=['mpi', 'freq_score', 'guid'],
+        optional=['mpi', 'freq_score'],
+        exclude=['guid']
     )
     df = pd.DataFrame.from_records(data=vectors, columns = columns)
     dataframe_to_db(df, 'mpi_vectors')

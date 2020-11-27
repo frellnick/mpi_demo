@@ -57,9 +57,9 @@ def full_id_view(*args, **kwargs) -> pd.DataFrame:
     
     try:
         iframe = pd.read_sql_query(query, get_db()).drop_duplicates()
-    except:
+    except Exception as e:
         iframe = pd.DataFrame()
-        preplogger.warn('Could not create iframe.  Returning empty dataframe.')
+        preplogger.warn(f'Could not create iframe.  Returning empty dataframe.\n{e}')
 
     if 'index' in iframe.columns:
         iframe.drop('index', axis=1, inplace=True)
