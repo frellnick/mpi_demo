@@ -1,6 +1,6 @@
 #main.py
 
-from utils import match_columns
+from utils import match_dataframe_columns
 from utils.db import init_db
 from config import CLASSIFIER
 
@@ -48,22 +48,16 @@ def _check_match(datapack:dict):
 
 
 def _preprocess(tablename:str):
-    def _get_values(iview):
-        if hasattr(iview, 'value'):
-            return iview.value
-        else:
-            return iview
     def _get_scores(iview):
         if hasattr(iview, 'freq_score'):
-            return iview.freq_score
+            return iview['mpi', 'freq_score']
 
     datapack = _load_from_db(tablename=tablename)
     _check_match(datapack=datapack)
     iview = datapack['iview']
-    datapack['ivalue'] = _get_values(iview)
     datapack['iscore'] = _get_scores(iview)
     
-    source_data, id_data = match_dtype(datapack['dview'], datapack['ivalue'])
+    source_data, id_data = match_dtype(datapack['dview'], datapack['iview'])
     datapack['subset'] = clean_raw(datapack['subset'])
     datapack['source_clean'] = clean_raw(source_data)
     datapack['id_clean'] = clean_raw(id_data)

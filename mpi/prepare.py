@@ -49,17 +49,32 @@ def _filter_mapped_columns(tablename: str) -> str:
 registry_idview = {}
 
 
-# FULL: Returns 
-def full_id_view(*args, **kwargs) -> pd.DataFrame:
+# FULL: Returns
+
+def _build_iframe_selection_query(*args, **kwargs):
+    def _add_scores_to_list(valid_columns, available_id_columns):
+        for name in available_id_columns:
+            if 'score' in name:
+                valid_columns.append(name)
+        return valid_columns
+
     query = "SELECT * FROM mpi_vectors LIMIT 1"
     check_selection = pd.read_sql(query, get_db())
     if 'mapped_columns' in kwargs:
         valid_columns = get_column_intersect(
             check_selection, pd.DataFrame(columns=kwargs['mapped_columns'])
             )
+        valid_columns = _add_scores_to_list(valid_columns, check_selection.columns.to_list())
+        valid_columns.append('mpi')
         query = f"SELECT {','.join(valid_columns)} from mpi_vectors"
     else:
         query = "SELECT * FROM mpi_vectors"
+    return query
+
+
+
+def full_id_view(*args, **kwargs) -> pd.DataFrame:
+    query = _build_iframe_selection_query(*args, **kwargs)
     preplogger.debug('Preparing identity view with: \n' + query)
     
     try:
