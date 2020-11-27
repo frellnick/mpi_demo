@@ -1,12 +1,15 @@
 # update.py
 
-from utils.mpiutils import union_frames
-import pandas as pd
-import numpy as np
-from utils.db import get_session, get_mongo, yield_mpi_document_batch, dataframe_to_db
-from utils.generators import generate_random_mpi, gen_mpi_insert, create_mpi_vector
+from utils import (
+    union_frames,
+    get_session, get_mongo, yield_mpi_document_batch, dataframe_to_db,
+    generate_random_mpi, gen_mpi_insert, create_mpi_vector
+)
 from .writers import write_mpi_data
 from assets.mapping import colmap
+
+import pandas as pd
+import numpy as np
 
 import logging
 
