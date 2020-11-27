@@ -21,8 +21,8 @@ def create_data_view(tablename: str) -> pd.DataFrame:
     raw_query = f"SELECT * FROM {tablename}"
     preplogger.debug(ident_query)
     raw = pd.read_sql_query(raw_query, get_db())
-    dview = pd.read_sql_query(ident_query, get_db())
-    return raw, dview
+    subset = pd.read_sql_query(ident_query, get_db())  ## Deprecate for in-memory mapping
+    return raw, subset
 
 
 def _filter_mapped_columns(tablename: str) -> str:
@@ -51,8 +51,16 @@ registry_idview = {}
 # FULL: Returns 
 def full_id_view(*args, **kwargs) -> pd.DataFrame:
     query = "SELECT * FROM mpi_vectors"
+    if 'mapped_columns' in kwargs:
+        query = f"SELECT {','.join(kwargs['mapped_columns'])} from mpi_vectors"
     preplogger.debug('Preparing identity view with: \n' + query)
-    iframe = pd.read_sql_query(query, get_db()).drop_duplicates()
+    
+    try:
+        iframe = pd.read_sql_query(query, get_db()).drop_duplicates()
+    except:
+        iframe = pd.DataFrame()
+        preplogger.warn('Could not create iframe.  Returning empty dataframe.')
+
     if 'index' in iframe.columns:
         iframe.drop('index', axis=1, inplace=True)
     return iframe

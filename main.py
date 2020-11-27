@@ -66,7 +66,7 @@ def _preprocess(tablename:str):
     source_data, id_data = match_dtype(datapack['dview'], datapack['ivalue'])
     datapack['subset'] = clean_raw(datapack['subset'])
     datapack['source_clean'] = clean_raw(source_data)
-    datapack['id_clean'] = clean_raw(id_data).reset_index(level='mpi')
+    datapack['id_clean'] = clean_raw(id_data)
 
     return datapack
 

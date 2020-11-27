@@ -29,6 +29,14 @@ def _create_mpi_vectors(*args, **kwargs) -> list:
     return mpi_vectors
 
 
+def _detect_add_column_names(colmap: dict, raw_columns:list, optional:list):
+    columns = set(colmap.values())
+    for name in optional:
+        columns.add(name)
+    for name in raw_columns:
+        columns.add(name)
+    return columns
+
 
 def update_mpi_vector_table():
     """
@@ -38,10 +46,11 @@ def update_mpi_vector_table():
         NOTE: mpi is a indexed, constrained unique.  1 _id === 1 mpi
     """
     vectors = _create_mpi_vectors()
-    columns = set(colmap.values())
-    columns.add('mpi')
-    columns.add('freq_score')
-    columns.remove('guid')
+    columns = _detect_add_column_names(
+        colmap=colmap,
+        raw_columns=list(vectors[0].keys()),
+        optional=['mpi', 'freq_score', 'guid'],
+    )
     df = pd.DataFrame.from_records(data=vectors, columns = columns)
     dataframe_to_db(df, 'mpi_vectors')
 
