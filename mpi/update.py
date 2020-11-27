@@ -131,26 +131,34 @@ def expand_match_to_raw(raw, subset, source_clean, id_clean, links_pred):
     matched, unmatched = append_mpi(source_clean, id_clean, links_pred)
     updatelogger.info(f"Matched {len(matched)} records.  Unmatched {len(unmatched)} records.")
     
-    # Update Identity Pool
+    # Generate MPI's for unmatched rows
     unmatched = generate_mpi(unmatched)
-    try:
-        write_mpi_data(gen_mpi_insert(matched))
-    except Exception as e:
-        updatelogger.error(f'Could not write matched data to MPI table. {e}')
-    # Error only allowable with matched data.  Unmatched should be empty if data already exists.
-    write_mpi_data(gen_mpi_insert(unmatched))  
-
     updatelogger.debug(f"Unmatched frame showing {len(unmatched[unmatched.mpi.notna()])} \
         of {len(unmatched)} MPI generated.")
-    source_clean = union_frames(matched, unmatched)
-    updatelogger.info(f"Union source_clean frame shows {len(source_clean[source_clean.mpi.notna()])} mpi.")
+    
+    # Update Identity Pool by writing updates or new entries
+    try:
+        if len(matched) > 0:
+            write_mpi_data(gen_mpi_insert(matched), update=True)
+    except Exception as e:
+        updatelogger.error(f'Could not write matched data to MPI table. {e}')
+    try:
+        if len(unmatched) > 0:
+            write_mpi_data(gen_mpi_insert(unmatched), update=False)
+    except Exception as e:
+        updatelogger.error(f'Could not write unmatched data to MPI table. {e}')
+
+    # Combine matched and unmatched (newly generated) datasets
+    combined = union_frames(matched, unmatched)
+    updatelogger.info(f"Combined matched, unmatched, frame shows {len(combined[combined.mpi.notna()])} mpi.")
 
     # Expand deduped matches to full identity table
-    std_columns = [col for col in source_clean if col != 'mpi']
-    mapped_ids = pd.merge(subset, source_clean, how='left', left_on=std_columns, right_on=std_columns)
+    std_columns = [col for col in combined if col != 'mpi']
+    mapped_ids = pd.merge(subset, combined, how='left', left_on=std_columns, right_on=std_columns)
 
     # Match mpi with corresponding indices in raw table
-    raw = _remove_index_col(raw)
-    raw['mpi'] = mapped_ids.mpi
-    updatelogger.info(f'Final output {len(raw[raw.mpi.notna()])} of {len(raw)} records assigned MPI')
-    return raw, matched, unmatched
+    updated = raw
+    updated = _remove_index_col(updated)
+    updated['mpi'] = mapped_ids.mpi
+    updatelogger.info(f'Final output {len(updated[updated.mpi.notna()])} of {len(updated)} records assigned MPI')
+    return updated, matched, unmatched

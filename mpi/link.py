@@ -6,19 +6,11 @@ linking workflow.  checks prepared records and runs through link sequence simila
 blocking, indexing, comparing, classifying
 """
 
-import pandas as pd
-import numpy as np 
-
-from utils import union_frames, get_column_intersect
-from mpi.index import build_indexer
-from mpi.compare import build_comparator
-from mpi.classify import build_classifier, estimate_true
-from mpi.update import append_mpi, expand_match_to_raw
-
 import logging
 
 linklogger = logging.getLogger(__name__)
 
+from utils import get_column_intersect
 
 
 #######################
