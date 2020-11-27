@@ -2,16 +2,19 @@
 
 from utils import match_dataframe_columns
 from utils.db import init_db
+from utils.exceptions import Bypass
 from config import CLASSIFIER
 
 from ingest import load_file
-from mpi.prepare import create_distinct_view, create_identity_view
+from mpi.prepare import create_data_view, create_identity_view
 from mpi.preprocess import clean_raw, match_dtype
 from mpi.link import is_match_available
 from mpi.index import build_indexer
 from mpi.compare import build_comparator
 from mpi.classify import build_classifier, estimate_true
-from mpi.update import generate_mpi, expand_match_to_raw
+from mpi.update import (
+    generate_mpi, expand_match_to_raw, update_mpi_vector_table, write_mpi_data, gen_mpi_insert
+)
 from mpi.evaluate import simple_evaluation
 
 import logging 
@@ -20,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 def _load_from_db(tablename:str) -> dict:
     # Create a view of the data with mapped columns
-    raw, subset = create_distinct_view(tablename=tablename)
+    raw, subset = create_data_view(tablename=tablename)
     dview = subset.drop_duplicates()
 
     # Create a view from the MPI table with valid identity data
@@ -33,41 +36,39 @@ def _load_from_db(tablename:str) -> dict:
     }
 
 
+
 def _check_match(datapack:dict):
     dview = datapack['dview']
     iview = datapack['iview']
     # Check for match availability.  If not, hold process to generate MPIs from table.
-    if not is_match_available(dview, iview):
-        generate_mpi(dview)
-        logger.info('Match unavailable.  Generated MPIs for data view.')
-        # Recreate a view from the MPI table with valid identity data (reload from DB required after MPI creation)
-        datapack['iview'] = create_identity_view(dview.columns.tolist())
-    else:
+    if is_match_available(dview, iview):
         logger.info('Match available.  Proceed with linking process.')
-
+    else:
+        logger.info('Match unavailable.  Generated MPIs for data view.')
+        temp = generate_mpi(
+            clean_raw(dview)
+        )
+        write_mpi_data(gen_mpi_insert(temp))
+        update_mpi_vector_table()
+        # Recreate a view from the MPI table with valid identity data
+        iview = create_identity_view(mapped_columns=dview.columns.tolist())
+        raise Bypass()
+    
 
 
 def _preprocess(tablename:str):
-    def _get_scores(iview):
-        if hasattr(iview, 'freq_score'):
-            return iview['mpi', 'freq_score']
-
     datapack = _load_from_db(tablename=tablename)
     _check_match(datapack=datapack)
-    iview = datapack['iview']
-    datapack['iscore'] = _get_scores(iview)
-    
     source_data, id_data = match_dtype(datapack['dview'], datapack['iview'])
     datapack['subset'] = clean_raw(datapack['subset'])
     datapack['source_clean'] = clean_raw(source_data)
     datapack['id_clean'] = clean_raw(id_data)
-
     return datapack
 
 
 
 def _index(datapack:dict):
-    source_matched, id_matched = match_columns(
+    source_matched, id_matched = match_dataframe_columns(
         t1=datapack['source_clean'],
         t2=datapack['id_clean'],
     )
@@ -75,6 +76,7 @@ def _index(datapack:dict):
     indexer = build_indexer(source_matched)
     datapack['candidates'] = indexer.index(source_matched, id_matched)
     datapack['source_matched'] = source_matched
+
 
 
 def _compare(datapack:dict):
@@ -122,7 +124,6 @@ def _update(datapack:dict):
     datapack['output'] = output
     datapack['matched'] = matched
     datapack['unmatched'] = unmatched
-
 
 
 def _deidentify():
