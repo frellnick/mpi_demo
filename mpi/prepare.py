@@ -53,7 +53,8 @@ def full_id_view(*args, **kwargs) -> pd.DataFrame:
     query = "SELECT * FROM mpi_vectors"
     preplogger.debug('Preparing identity view with: \n' + query)
     iframe = pd.read_sql_query(query, get_db()).drop_duplicates()
-    # Return multi-index dataframe.  Access with df.values for field values, df.score for field scores.
+    if 'index' in iframe.columns:
+        iframe.drop('index', axis=1, inplace=True)
     return iframe
 registry_idview['full'] = full_id_view
 

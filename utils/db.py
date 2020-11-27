@@ -69,12 +69,14 @@ def query_db(query):
     return db.execute(query)
 
 
-def dataframe_to_db(dataframe, tablename='temp'):
+def dataframe_to_db(dataframe, tablename='temp', index=False):
     db = get_db()
     dataframe.to_sql(
         name=tablename, 
         con=db.connection,
-        if_exists='replace')
+        if_exists='replace',
+        index=index,
+        )
     return tablename
 
 
