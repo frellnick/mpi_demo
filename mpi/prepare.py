@@ -7,6 +7,7 @@ Create indexed view of raw data and appropriate identity view for linkage.
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
 from utils.db import query_db, get_db
+from utils import get_column_intersect
 from config import IDVIEWTYPE
 import logging
 
@@ -50,9 +51,15 @@ registry_idview = {}
 
 # FULL: Returns 
 def full_id_view(*args, **kwargs) -> pd.DataFrame:
-    query = "SELECT * FROM mpi_vectors"
+    query = "SELECT * FROM mpi_vectors LIMIT 1"
+    check_selection = pd.read_sql(query, get_db())
     if 'mapped_columns' in kwargs:
-        query = f"SELECT {','.join(kwargs['mapped_columns'])} from mpi_vectors"
+        valid_columns = get_column_intersect(
+            check_selection, pd.DataFrame(columns=kwargs['mapped_columns'])
+            )
+        query = f"SELECT {','.join(valid_columns)} from mpi_vectors"
+    else:
+        query = "SELECT * FROM mpi_vectors"
     preplogger.debug('Preparing identity view with: \n' + query)
     
     try:
