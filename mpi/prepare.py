@@ -16,16 +16,6 @@ preplogger = logging.getLogger(__name__)
 
 ## Prepare identifying information for matching ##
 
-def create_data_view(tablename: str) -> pd.DataFrame:
-    mapped_columns = _filter_mapped_columns(tablename)
-    ident_query = f"SELECT {mapped_columns} FROM {tablename}"
-    raw_query = f"SELECT * FROM {tablename}"
-    preplogger.debug(ident_query)
-    raw = pd.read_sql_query(raw_query, get_db())
-    subset = pd.read_sql_query(ident_query, get_db())  ## Deprecate for in-memory mapping
-    return raw, subset
-
-
 def _filter_mapped_columns(tablename: str) -> str:
     def _rename_column(col):
         pool_name = colmap[col]  # get standard name from mapping
@@ -39,6 +29,22 @@ def _filter_mapped_columns(tablename: str) -> str:
     preplogger.debug(f'Querying for column names of {tablename}. Returned: {table_columns}')
     mapped_cols = [_rename_column(col) for col in table_columns if col in colmap.keys()]
     return ','.join(mapped_cols)
+
+
+
+def create_data_view(tablename: str) -> pd.DataFrame:
+    mapped_columns = _filter_mapped_columns(tablename)
+    ident_query = f"SELECT {mapped_columns} FROM {tablename}"
+    raw_query = f"SELECT * FROM {tablename}"
+    preplogger.debug(ident_query)
+    raw = pd.read_sql_query(raw_query, get_db())
+    subset = pd.read_sql_query(ident_query, get_db())  ## Deprecate for in-memory mapping
+    preplogger.info(f'Data View created with \
+        columns:\n{raw.columns}\nlength: {len(raw)}\nsubset contains:\n{subset.columns}'
+        )
+    return raw, subset
+
+
 
 
 ################################################
@@ -85,7 +91,9 @@ def full_id_view(*args, **kwargs) -> pd.DataFrame:
 
     if 'index' in iframe.columns:
         iframe.drop('index', axis=1, inplace=True)
-    return iframe.dropna(axis=1, how='all')
+
+    iframe = iframe.dropna(axis=1, how='all')
+    preplogger.info(f'IFrame created with columns:\n{iframe.columns}\nlength:{len(iframe)}')
 registry_idview['full'] = full_id_view
 
 

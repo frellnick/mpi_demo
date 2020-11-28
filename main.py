@@ -131,7 +131,11 @@ def _deidentify():
 
 
 def run_mpi(tablename:str):
-    datapack = _preprocess(tablename=tablename)
+    try:
+        datapack = _preprocess(tablename=tablename)
+    except Exception as e:
+        logger.warn(f'Error detected. Returning datapack and skipping remaining linkage steps.\n{e}')
+        return datapack
     _index(datapack=datapack)
     _compare(datapack=datapack)
     _classify(datapack=datapack)
