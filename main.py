@@ -1,8 +1,11 @@
 #main.py
 
+from assets.mapping import colmap
+
 from utils import match_dataframe_columns
-from utils.db import init_db
+from utils.db import init_db, dataframe_to_db
 from utils.exceptions import Bypass
+
 from config import CLASSIFIER
 
 from ingest import load_file
@@ -17,17 +20,21 @@ from mpi.update import (
 )
 from mpi.evaluate import simple_evaluation
 
+from di import simple_di
+
+
 import logging 
 logger = logging.getLogger(__name__)
 
 
 def _load_from_db(tablename:str) -> dict:
     # Create a view of the data with mapped columns
-    raw, subset = create_data_view(tablename=tablename)
+    raw, subset = create_data_view(tablename)
     dview = subset.drop_duplicates()
-
-    # Create a view from the MPI table with valid identity data
-    iview = create_identity_view(mapped_columns=dview.columns.tolist())
+    iview = create_identity_view(mapped_columns=dview.columns.to_list())
+    logger.debug(f"Datapack created:\n\
+            dview - len:{len(dview)}\n\
+            iview - len:{len(iview)}")
     return {
         'raw': raw,
         'subset': subset,
@@ -41,6 +48,9 @@ def _check_match(datapack:dict):
     dview = datapack['dview']
     iview = datapack['iview']
     # Check for match availability.  If not, hold process to generate MPIs from table.
+    logging.debug(f'Checking for match potential.\
+            DVIEW: len - {len(dview)}, columns - {dview.columns}\
+            IVIEW: len - {len(iview)}, columns - {iview.columns}')
     if is_match_available(dview, iview):
         logger.info('Match available.  Proceed with linking process.')
     else:
@@ -52,18 +62,18 @@ def _check_match(datapack:dict):
         update_mpi_vector_table()
         # Recreate a view from the MPI table with valid identity data
         iview = create_identity_view(mapped_columns=dview.columns.tolist())
-        raise Bypass()
+        return Bypass()
     
 
 
 def _preprocess(tablename:str):
     datapack = _load_from_db(tablename=tablename)
-    _check_match(datapack=datapack)
+    err = _check_match(datapack=datapack)
     source_data, id_data = match_dtype(datapack['dview'], datapack['iview'])
     datapack['subset'] = clean_raw(datapack['subset'])
     datapack['source_clean'] = clean_raw(source_data)
     datapack['id_clean'] = clean_raw(id_data)
-    return datapack
+    return datapack, err
 
 
 
@@ -125,22 +135,28 @@ def _update(datapack:dict):
     datapack['matched'] = matched
     datapack['unmatched'] = unmatched
 
+    update_mpi_vector_table()
 
-def _deidentify():
-    pass
+
+def _deidentify(datapack:dict, tablename:str):
+    dataframe_to_db(
+        simple_di(datapack['output']), 
+        tablename=tablename + '_di'
+    )
 
 
 def run_mpi(tablename:str):
-    try:
-        datapack = _preprocess(tablename=tablename)
-    except Exception as e:
-        logger.warn(f'Error detected. Returning datapack and skipping remaining linkage steps.\n{e}')
-        return datapack
+    logger.info(f"Running MPI on table: {tablename}")
+    datapack, err = _preprocess(tablename=tablename)
+    if err is not None:
+            logger.warn(f'Error detected. Returning datapack and skipping remaining linkage steps.\n{err}')
+            return datapack
     _index(datapack=datapack)
     _compare(datapack=datapack)
     _classify(datapack=datapack)
     _evaluate(datapack=datapack)
     _update(datapack=datapack)
+    _deidentify(datapack=datapack, tablename=tablename)
 
     return datapack
 

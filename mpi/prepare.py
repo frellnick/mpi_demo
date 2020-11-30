@@ -94,6 +94,7 @@ def full_id_view(*args, **kwargs) -> pd.DataFrame:
 
     iframe = iframe.dropna(axis=1, how='all')
     preplogger.info(f'IFrame created with columns:\n{iframe.columns}\nlength:{len(iframe)}')
+    return iframe
 registry_idview['full'] = full_id_view
 
 

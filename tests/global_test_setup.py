@@ -23,5 +23,9 @@ class FileLogger():
     def debug(self, message, name='und'):
         self._write_to_file(f'DEBUG: {message}', name)
 
+    def error(self, message, name='und'):
+        self._write_to_file(f'ERROR: {message}', name)
+
+
 
 testlogger = FileLogger(logfile=logfile)

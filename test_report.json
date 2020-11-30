@@ -1,0 +1,32 @@
+[
+  {
+    "name": "ustc_students-usbe_students-ushe_students",
+    "count_documents": 29284,
+    "count_vectors": 29346
+  },
+  {
+    "name": "ustc_students-ushe_students-usbe_students",
+    "count_documents": 28676,
+    "count_vectors": 28676
+  },
+  {
+    "name": "usbe_students-ustc_students-ushe_students",
+    "count_documents": 29284,
+    "count_vectors": 29346
+  },
+  {
+    "name": "usbe_students-ushe_students-ustc_students",
+    "count_documents": 28676,
+    "count_vectors": 28676
+  },
+  {
+    "name": "ushe_students-ustc_students-usbe_students",
+    "count_documents": 28676,
+    "count_vectors": 28676
+  },
+  {
+    "name": "ushe_students-usbe_students-ustc_students",
+    "count_documents": 28676,
+    "count_vectors": 28676
+  }
+]
