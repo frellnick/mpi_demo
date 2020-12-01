@@ -36,7 +36,7 @@ Tests written with pytest
 Run all tests with:
 
 ```bash
-XXXXX
+pytest
 ```
 
 ### Managing Conda Environments
