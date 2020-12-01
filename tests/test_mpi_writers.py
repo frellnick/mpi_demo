@@ -1,12 +1,11 @@
 # test_mpi_writers.py
 
-from utils.db import get_db, init_mongo
-from utils.models import NoSQLSerializer
+from db import get_db, init_mongo, NoSQLSerializer
 from utils.generators import gen_mpi_insert
 
 from .global_test_setup import testlogger
 
-from mpi.writers import write_mpi_data
+from db.writers import write_mpi_data
 
 import pandas as pd
 

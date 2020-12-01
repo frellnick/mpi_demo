@@ -1,6 +1,6 @@
 # test_pipeline_sets.py
 
-from utils.db import get_mongo, get_session
+from db import get_mongo, get_session
 from main import run_mpi
 
 from random import choice

@@ -6,7 +6,7 @@ Create indexed view of raw data and appropriate identity view for linkage.
 
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
-from utils.db import query_db, get_db
+from db import query_db, get_db
 from utils import get_column_intersect
 from config import IDVIEWTYPE
 import logging

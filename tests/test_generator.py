@@ -5,7 +5,7 @@ import pytest
 import pandas as pd
 import json
 
-from utils.db import dataframe_to_db, get_db
+from db import dataframe_to_db, get_db
 
 from utils.generators import gen_mpi_insert
 

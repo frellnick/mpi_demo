@@ -8,7 +8,7 @@ import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from contextlib import contextmanager
-from utils.models import *
+from .models import *
 from config import DATABASES
 
 import logging
@@ -67,17 +67,6 @@ def init_db():
 def query_db(query):
     db = get_db()
     return db.execute(query)
-
-
-def dataframe_to_db(dataframe, tablename='temp', index=False):
-    db = get_db()
-    dataframe.to_sql(
-        name=tablename, 
-        con=db.connection,
-        if_exists='replace',
-        index=index,
-        )
-    return tablename
 
 
 ######################

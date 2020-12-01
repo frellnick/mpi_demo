@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 import time
 
-from utils.db import dataframe_to_db
+from db import dataframe_to_db
 
 logger = logging.getLogger(__name__)
 

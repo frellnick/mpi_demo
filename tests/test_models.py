@@ -1,8 +1,7 @@
 # test_models.py
 
 
-from utils.db import get_db
-from utils.models import NoSQLSerializer
+from db import get_db, NoSQLSerializer
 from utils.generators import gen_mpi_insert
 
 from .global_test_setup import testlogger

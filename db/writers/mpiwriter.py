@@ -1,7 +1,7 @@
 # writer.py
 
-from utils.models import MasterPersonLong, NoSQLSerializer
-from utils.db import get_session, get_mongo
+from db.db import get_session, get_mongo
+from db.models import MasterPersonLong, NoSQLSerializer
 from config import MPIARCH
 
 from pymongo import InsertOne, UpdateOne

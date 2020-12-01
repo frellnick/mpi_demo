@@ -1,6 +1,6 @@
 # test_update.py
 
-from mpi.writers import write_mpi_data, writers
+from db import write_mpi_data, writers
 import pytest 
 
 @pytest.fixture

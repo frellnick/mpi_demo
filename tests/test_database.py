@@ -1,8 +1,8 @@
 # test_database
 
 
-from utils.db import init_db, get_db, get_mongo
-from utils.models import validate_model
+from db import init_db, get_db, get_mongo
+from db import validate_model
 import pytest
 
 def test_init_db():
