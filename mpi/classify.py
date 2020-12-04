@@ -14,7 +14,14 @@ classificationlogger = logging.getLogger(__name__)
 def estimate_true(comparisons):
     rexp = len(comparisons.columns)
     rsum = comparisons.sum(axis=1)
-    return comparisons.index[rsum == rexp]
+    best_matches = comparisons.index[rsum == rexp]
+
+    if len(best_matches) == 0:
+        classificationlogger.warn("Full match unavailable.  Falling back on longest match vector.")
+        rmax = max(comparisons.sum(axis=1))
+        best_matches = comparisons.index[rsum == rmax]
+
+    return best_matches
 
 
 def build_classifier(name, comparisons, match_index=None, **kwargs):

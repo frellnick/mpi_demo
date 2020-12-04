@@ -77,3 +77,5 @@ def test_ordered_ingest(datasets:list=None, output='test_report.json'):
     if output:
         with open(output, 'w+') as file:
             json.dump(reports, file, indent=2)
+    
+    return reports

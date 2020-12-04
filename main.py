@@ -3,7 +3,7 @@
 from assets.mapping import colmap
 
 from utils import match_dataframe_columns
-from utils.db import init_db, dataframe_to_db
+from db import init_db, dataframe_to_db
 from utils.exceptions import Bypass
 
 from config import CLASSIFIER
@@ -149,7 +149,7 @@ def run_mpi(tablename:str):
     logger.info(f"Running MPI on table: {tablename}")
     datapack, err = _preprocess(tablename=tablename)
     if err is not None:
-            logger.warn(f'Error detected. Returning datapack and skipping remaining linkage steps.\n{err}')
+            logger.warn(f'Error detected. \n{err}')
             return datapack
     _index(datapack=datapack)
     _compare(datapack=datapack)
