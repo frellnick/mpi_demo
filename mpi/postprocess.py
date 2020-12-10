@@ -3,8 +3,9 @@
 
 import pandas as pd
 
-from db import dataframe_to_db
-from db import get_session, get_mongo
+from db import dataframe_to_db, get_session
+from db.common import get_table_columns
+from assets.mapping import blocked_identifiers
 
 import logging
 
@@ -63,8 +64,24 @@ class Report():
 
 
 
-## Checks ##
+## Check Functions (Rule1 vs Rule2) ##
 
 def check_repeat_identifiers(*args, **kwargs) -> pd.DataFrame:
-    pass
+    available_columns = get_table_columns('mpi_vector')
+    query = """
+        SELECT 
+            mpi
+        FROM 
+            mpi_vectors
+        WHERE
+
+    """
+
+
+## Report Functions (Log Stats)
+
+def simple_report(resultframe: pd.DataFrame) -> dict:
+    return {
+        'CountFlagged': len(resultframe)
+    }
 

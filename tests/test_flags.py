@@ -43,5 +43,9 @@ def tables():
 
 
 
-def test_flag(tables):
+def test_create_flag():
+    f = Flag()
+
+
+def test_run_flag():
     pass
