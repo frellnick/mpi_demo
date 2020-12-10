@@ -54,7 +54,7 @@ def test_common_get_table_columns(setup):
     assert err is None
     if err is None:
         assert type(cols) == list
-        testlogger.debug(f'cols')
+        testlogger.debug(f'{cols}', __name__)
     else:
         testlogger.error(f'err')
         raise ValueError(f'{err}')
