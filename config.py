@@ -37,7 +37,7 @@ def log_setup(loglevel, logfile):
         level = logging.INFO
     
     logging.basicConfig(
-        format='[%(asctime)s] %(levelname)s: %(message)s',
+        format='[%(asctime)s] %(levelname)s | %(name)s: %(message)s',
         filename=logfile, 
         level=level)
 

@@ -1,98 +1,122 @@
 [
   {
     "name": "dws_wages-usbe_students-ushe_students-ustc_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 29284,
+    "count_vectors": 29346
   },
   {
     "name": "dws_wages-usbe_students-ustc_students-ushe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38659,
+    "count_vectors": 38735
   },
   {
     "name": "dws_wages-ushe_students-usbe_students-ustc_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38006,
+    "count_vectors": 38006
   },
   {
     "name": "dws_wages-ushe_students-ustc_students-usbe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38006,
+    "count_vectors": 38006 
   },
   {
     "name": "dws_wages-ustc_students-usbe_students-ushe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38617,
+    "count_vectors": 38617
   },
   {
     "name": "dws_wages-ustc_students-ushe_students-usbe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38007,
+    "count_vectors": 38007
   },
   {
     "name": "usbe_students-dws_wages-ushe_students-ustc_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38676,
+    "count_vectors": 38676
   },
   {
     "name": "usbe_students-dws_wages-ustc_students-ushe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38659,
+    "count_vectors": 38704
   },
   {
     "name": "usbe_students-ushe_students-dws_wages-ustc_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38006,
+    "count_vectors": 38006
   },
   {
     "name": "usbe_students-ushe_students-ustc_students-dws_wages",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 37382,
+    "count_vectors": 37382
   },
   {
     "name": "usbe_students-ustc_students-dws_wages-ushe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 29284,
+    "count_vectors": 29346
   },
   {
     "name": "usbe_students-ustc_students-ushe_students-dws_wages",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 29284,
+    "count_vectors": 29346
   },
   {
     "name": "ushe_students-dws_wages-usbe_students-ustc_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38006,
+    "count_vectors": 38006
   },
   {
     "name": "ushe_students-dws_wages-ustc_students-usbe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38006,
+    "count_vectors": 38006
   },
   {
     "name": "ushe_students-usbe_students-dws_wages-ustc_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38006,
+    "count_vectors": 38006
   },
   {
     "name": "ushe_students-usbe_students-ustc_students-dws_wages",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 37382,
+    "count_vectors": 37382
   },
   {
     "name": "ushe_students-ustc_students-dws_wages-usbe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 37382,
+    "count_vectors": 37382
   },
   {
     "name": "ushe_students-ustc_students-usbe_students-dws_wages",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 37382,
+    "count_vectors": 37382
   },
   {
     "name": "ustc_students-dws_wages-usbe_students-ushe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38617,
+    "count_vectors": 38617
   },
   {
     "name": "ustc_students-dws_wages-ushe_students-usbe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38007,
+    "count_vectors": 38007
   },
   {
     "name": "ustc_students-usbe_students-dws_wages-ushe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 38615,
+    "count_vectors": 45088
   },
   {
     "name": "ustc_students-usbe_students-ushe_students-dws_wages",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 29284,
+    "count_vectors": 29346
   },
   {
     "name": "ustc_students-ushe_students-dws_wages-usbe_students",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 37382,
+    "count_vectors": 37382
   },
   {
     "name": "ustc_students-ushe_students-usbe_students-dws_wages",
-    "error": "Run Failed. single positional indexer is out-of-bounds"
+    "count_documents": 37382,
+    "count_vectors": 37382
   }
 ]

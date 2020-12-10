@@ -37,17 +37,30 @@ def cleanup_and_report(name:str=None) -> dict:
 def run_set(tablenames:list) -> dict:
     rundata = {}
     for tablename in tablenames:
-        rundata[tablename] = run_mpi(tablename=tablename)
+        try:
+            rundata[tablename] = run_mpi(tablename=tablename)
+        except Exception as e:
+            testlogger.error(f'{e}. Could not complete MPI on {tablename}')
+            rundata[tablename] = e
     
-    report = cleanup_and_report(name='-'.join(tablenames))
-    report['rundata'] = rundata
+    try:
+        report = cleanup_and_report(name='-'.join(tablenames))
+        report['rundata'] = rundata
+    except Exception as e:
+        testlogger.error(f'{e}. Could not complete cleanup_and_report on {tablenames}')
+        report['rundata'] = None
+
     return report
 
 
 
 def run_and_clip_report(
         tablenames, keep=['name', 'count_documents', 'count_vectors']):
-    report = run_set(tablenames)
+    try:
+        report = run_set(tablenames)
+    except Exception as e:
+        testlogger.error(f'{e}. Could not run set {tablenames}')
+
     clipped = {}
     for col in keep:
         clipped[col] = report[col]
@@ -57,7 +70,6 @@ def run_and_clip_report(
 
 def test_ordered_ingest(datasets:list=None, output='test_report.json'):
     if datasets is None:
-        # datasets = ['dws_wages', 'usbe_students', 'ushe_students', 'ustc_students']
         datasets = ['ustc_students', 'usbe_students', 'ushe_students']
     perms = [x for x in permutations(datasets, len(datasets))]
 
