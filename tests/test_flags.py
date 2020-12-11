@@ -7,7 +7,9 @@ from db import get_session, get_mongo
 from db.common import clear_databases
 
 
-from mpi.postprocess import Flag
+from mpi.postprocess import Rule2
+
+from .global_test_setup import testlogger
 
 
 @pytest.fixture
@@ -22,9 +24,13 @@ def tables():
 
 
 
-def test_create_flag():
-    f = Flag()
+def test_rule_2_flag():
+    testlogger.info("Starting flag test: Rule2", __name__)
+    flag2 = Rule2
+    rep = flag2
+    assert rep is not None
 
 
-def test_run_flag():
+
+def test_run_flag(tables):
     pass

@@ -149,7 +149,7 @@ def run_mpi(tablename:str):
     logger.info(f"Running MPI on table: {tablename}")
     datapack, err = _preprocess(tablename=tablename)
     if err is not None:
-            logger.warn(f'Error detected. \n{err}')
+            logger.warning(f'Error detected. \n{err}')
             return datapack
     _index(datapack=datapack)
     _compare(datapack=datapack)
