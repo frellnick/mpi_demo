@@ -24,3 +24,14 @@ def get_column_intersect(dfa: pd.DataFrame, dfb: pd.DataFrame) -> list:
 def match_dataframe_columns(t1: pd.DataFrame, t2: pd.DataFrame) -> tuple:
     keep = get_column_intersect(t1, t2)
     return t1[keep], t2[keep]
+
+
+def result_proxy_to_dataframe(resultproxy):
+    d, a = {}, []
+    for rowproxy in resultproxy:
+        # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+        for column, value in rowproxy.items():
+            # build up the dictionary
+            d = {**d, **{column: value}}
+        a.append(d)
+    return pd.DataFrame.from_records(a)
