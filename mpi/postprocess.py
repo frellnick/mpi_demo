@@ -71,7 +71,10 @@ def check_repeat_identifiers(*args, **kwargs) -> pd.DataFrame:
     
     def _build_cte_query_from_column(colname):
         q = \
-            f"flag_{colname} AS (SELECT mpi, '{colname}' AS field, {colname} AS value FROM mpi_vectors GROUP BY {colname} HAVING COUNT(mpi) > 1)"
+            f"flag_{colname} AS (SELECT GROUP_CONCAT(mpi, ',') AS mpi, '{colname}' AS field, {colname} AS value \n\
+                FROM (SELECT DISTINCT mpi, {colname} FROM mpi_vectors) \n\
+                    WHERE {colname} IS NOT NULL \n\
+                    GROUP BY {colname} HAVING COUNT(mpi) > 1)"
         return q
 
     def _build_ctes(available_columns):
