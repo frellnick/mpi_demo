@@ -67,20 +67,46 @@ class Report():
 ## Check Functions (Rule1 vs Rule2) ##
 
 def check_repeat_identifiers(*args, **kwargs) -> pd.DataFrame:
-    available_columns = get_table_columns('mpi_vector')
-    query = """
-        SELECT 
-            mpi
-        FROM 
-            mpi_vectors
-        WHERE
+    
+    def _build_cte_query_from_column(colname):
+        q = \
+            f"flag_{colname} AS (SELECT mpi FROM mpi_vectors GROUP BY {colname} HAVING COUNT(mpi) > 1)"
+        return q
 
-    """
+    def _build_ctes(available_columns):
+        return ',\n'.join([_build_cte_query_from_column(col) for col in available_columns])
+
+    def _build_unions(available_columns):
+        if len(available_columns) > 1:
+            return '\n'.join([f'UNION SELECT mpi FROM flag_{col}' for col in available_columns[1:]])
+        else:
+            return ''
+
+    def _compile_query(ctes, unions, available_columns):
+        try:
+            return f"WITH \n{ctes} \nSELECT mpi FROM flag_{available_columns[0]} {unions};"
+        except Exception as e:
+            raise e
+
+    table_columns, err = get_table_columns('mpi_vectors')
+    available_columns = [col+'_pool' for col in table_columns if col in blocked_identifiers]
+    if err is None:
+        if len(available_columns) == 0: 
+            return []
+        ctes = _build_ctes(available_columns)
+        unions = _build_unions(available_columns)
+        return  _compile_query(ctes, unions, available_columns)
+    else:
+        raise ValueError(err)
+    
+
+    
+
 
 
 ## Report Functions (Log Stats)
 
-def simple_report(resultframe: pd.DataFrame) -> dict:
+def simple_count(resultframe: pd.DataFrame) -> dict:
     return {
         'CountFlagged': len(resultframe)
     }
