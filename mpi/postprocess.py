@@ -6,6 +6,7 @@ import pandas as pd
 from db import dataframe_to_db, get_session
 from db.common import get_table_columns
 from assets.mapping import blocked_identifiers
+from utils.filters import search_list
 
 import logging
 
@@ -70,7 +71,7 @@ def check_repeat_identifiers(*args, **kwargs) -> pd.DataFrame:
     
     def _build_cte_query_from_column(colname):
         q = \
-            f"flag_{colname} AS (SELECT mpi FROM mpi_vectors GROUP BY {colname} HAVING COUNT(mpi) > 1)"
+            f"flag_{colname} AS (SELECT mpi, '{colname}' AS field, {colname} AS value FROM mpi_vectors GROUP BY {colname} HAVING COUNT(mpi) > 1)"
         return q
 
     def _build_ctes(available_columns):
@@ -78,18 +79,18 @@ def check_repeat_identifiers(*args, **kwargs) -> pd.DataFrame:
 
     def _build_unions(available_columns):
         if len(available_columns) > 1:
-            return '\n'.join([f'UNION SELECT mpi FROM flag_{col}' for col in available_columns[1:]])
+            return '\n'.join([f"UNION SELECT mpi, field, value FROM flag_{col}" for col in available_columns[1:]])
         else:
             return ''
 
     def _compile_query(ctes, unions, available_columns):
         try:
-            return f"WITH \n{ctes} \nSELECT mpi FROM flag_{available_columns[0]} {unions};"
+            return f"WITH \n{ctes} \nSELECT mpi, field, value FROM flag_{available_columns[0]} {unions};"
         except Exception as e:
             raise e
 
     table_columns, err = get_table_columns('mpi_vectors')
-    available_columns = [col+'_pool' for col in table_columns if col in blocked_identifiers]
+    available_columns = [col for col in table_columns if search_list(col, blocked_identifiers)]
     if err is None:
         if len(available_columns) == 0: 
             return []
