@@ -7,7 +7,7 @@ from db import get_session, get_mongo
 from db.common import clear_databases
 
 
-from mpi.postprocess import Rule2
+from mpi.postprocess import Rule1, Rule2
 
 from .global_test_setup import testlogger
 
@@ -24,13 +24,16 @@ def tables():
 
 
 
-def test_rule_2_flag():
+def test_rule_1_flag(tables):
     testlogger.info("Starting flag test: Rule2", __name__)
-    flag2 = Rule2
-    rep = flag2
+    flag1 = Rule1
+    rep = flag1()
     assert rep is not None
 
 
 
-def test_run_flag(tables):
-    pass
+def test_rule_2_flag(tables):
+    testlogger.info("Starting flag test: Rule2", __name__)
+    flag2 = Rule2
+    rep = flag2()
+    assert rep is not None
