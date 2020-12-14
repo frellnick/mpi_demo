@@ -24,16 +24,12 @@ def tables():
 
 
 
-def test_rule_1_flag(tables):
+def test_rule_flags(tables):
     testlogger.info("Starting flag test: Rule2", __name__)
     flag1 = Rule1
     rep = flag1()
     assert rep is not None
 
-
-
-def test_rule_2_flag(tables):
-    testlogger.info("Starting flag test: Rule2", __name__)
     flag2 = Rule2
     rep = flag2()
     assert rep is not None

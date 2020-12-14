@@ -24,6 +24,7 @@ class Flag():
 
     def run(self, *args, **kwargs):
         res = self.check(*args, **kwargs)
+        res['flag'] = self.name
         self._res = res
         self.report(res)
         if self.write is not None:
