@@ -36,6 +36,15 @@ class Flag():
             return self._res
         return None
 
+    @property 
+    def summary(self):
+        if hasattr(self, '_res'):
+            return {
+                'name': self.name,
+                'count_flagged': len(self._res)
+            }
+        return None
+
     def __call__(self, *args, **kwargs):
         postlog.info(f"Starting flag {self.name}")
         self.run(*args, **kwargs)

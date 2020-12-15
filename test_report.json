@@ -1,122 +1,362 @@
 [
   {
-    "name": "dws_wages-usbe_students-ushe_students-ustc_students",
-    "count_documents": 29284,
-    "count_vectors": 29346
-  },
-  {
-    "name": "dws_wages-usbe_students-ustc_students-ushe_students",
-    "count_documents": 38659,
-    "count_vectors": 38735
-  },
-  {
-    "name": "dws_wages-ushe_students-usbe_students-ustc_students",
-    "count_documents": 38006,
-    "count_vectors": 38006
-  },
-  {
-    "name": "dws_wages-ushe_students-ustc_students-usbe_students",
-    "count_documents": 38006,
-    "count_vectors": 38006 
-  },
-  {
-    "name": "dws_wages-ustc_students-usbe_students-ushe_students",
-    "count_documents": 38617,
-    "count_vectors": 38617
-  },
-  {
-    "name": "dws_wages-ustc_students-ushe_students-usbe_students",
-    "count_documents": 38007,
-    "count_vectors": 38007
-  },
-  {
-    "name": "usbe_students-dws_wages-ushe_students-ustc_students",
-    "count_documents": 38676,
-    "count_vectors": 38676
-  },
-  {
-    "name": "usbe_students-dws_wages-ustc_students-ushe_students",
-    "count_documents": 38659,
-    "count_vectors": 38704
-  },
-  {
-    "name": "usbe_students-ushe_students-dws_wages-ustc_students",
-    "count_documents": 38006,
-    "count_vectors": 38006
-  },
-  {
-    "name": "usbe_students-ushe_students-ustc_students-dws_wages",
-    "count_documents": 37382,
-    "count_vectors": 37382
-  },
-  {
-    "name": "usbe_students-ustc_students-dws_wages-ushe_students",
-    "count_documents": 29284,
-    "count_vectors": 29346
-  },
-  {
-    "name": "usbe_students-ustc_students-ushe_students-dws_wages",
-    "count_documents": 29284,
-    "count_vectors": 29346
-  },
-  {
-    "name": "ushe_students-dws_wages-usbe_students-ustc_students",
-    "count_documents": 38006,
-    "count_vectors": 38006
-  },
-  {
-    "name": "ushe_students-dws_wages-ustc_students-usbe_students",
-    "count_documents": 38006,
-    "count_vectors": 38006
-  },
-  {
-    "name": "ushe_students-usbe_students-dws_wages-ustc_students",
-    "count_documents": 38006,
-    "count_vectors": 38006
-  },
-  {
-    "name": "ushe_students-usbe_students-ustc_students-dws_wages",
-    "count_documents": 37382,
-    "count_vectors": 37382
-  },
-  {
-    "name": "ushe_students-ustc_students-dws_wages-usbe_students",
-    "count_documents": 37382,
-    "count_vectors": 37382
-  },
-  {
-    "name": "ushe_students-ustc_students-usbe_students-dws_wages",
-    "count_documents": 37382,
-    "count_vectors": 37382
-  },
-  {
-    "name": "ustc_students-dws_wages-usbe_students-ushe_students",
-    "count_documents": 38617,
-    "count_vectors": 38617
-  },
-  {
-    "name": "ustc_students-dws_wages-ushe_students-usbe_students",
-    "count_documents": 38007,
-    "count_vectors": 38007
+    "name": "ustc_students-usbe_students-ushe_students-dws_wages",
+    "count_documents": 29307,
+    "count_vectors": 29338,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1222
+      }
+    ]
   },
   {
     "name": "ustc_students-usbe_students-dws_wages-ushe_students",
-    "count_documents": 38615,
-    "count_vectors": 45088
-  },
-  {
-    "name": "ustc_students-usbe_students-ushe_students-dws_wages",
-    "count_documents": 29284,
-    "count_vectors": 29346
-  },
-  {
-    "name": "ustc_students-ushe_students-dws_wages-usbe_students",
-    "count_documents": 37382,
-    "count_vectors": 37382
+    "count_documents": 38635,
+    "count_vectors": 41470,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 186
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 2023
+      }
+    ]
   },
   {
     "name": "ustc_students-ushe_students-usbe_students-dws_wages",
-    "count_documents": 37382,
-    "count_vectors": 37382
+    "count_documents": 37394,
+    "count_vectors": 37394,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 0
+      }
+    ]
+  },
+  {
+    "name": "ustc_students-ushe_students-dws_wages-usbe_students",
+    "count_documents": 37394,
+    "count_vectors": 37394,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 0
+      }
+    ]
+  },
+  {
+    "name": "ustc_students-dws_wages-usbe_students-ushe_students",
+    "count_documents": 38636,
+    "count_vectors": 38636,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1844
+      }
+    ]
+  },
+  {
+    "name": "ustc_students-dws_wages-ushe_students-usbe_students",
+    "count_documents": 38016,
+    "count_vectors": 38016,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 622
+      }
+    ]
+  },
+  {
+    "name": "usbe_students-ustc_students-ushe_students-dws_wages",
+    "count_documents": 29306,
+    "count_vectors": 29400,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 1
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1222
+      }
+    ]
+  },
+  {
+    "name": "usbe_students-ustc_students-dws_wages-ushe_students",
+    "count_documents": 29306,
+    "count_vectors": 29400,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 1
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1222
+      }
+    ]
+  },
+  {
+    "name": "usbe_students-ushe_students-ustc_students-dws_wages",
+    "count_documents": 37394,
+    "count_vectors": 37394,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 0
+      }
+    ]
+  },
+  {
+    "name": "usbe_students-ushe_students-dws_wages-ustc_students",
+    "count_documents": 38030,
+    "count_vectors": 38030,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 636
+      }
+    ]
+  },
+  {
+    "name": "usbe_students-dws_wages-ustc_students-ushe_students",
+    "count_documents": 38686,
+    "count_vectors": 38780,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 1
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1852
+      }
+    ]
+  },
+  {
+    "name": "usbe_students-dws_wages-ushe_students-ustc_students",
+    "count_documents": 38688,
+    "count_vectors": 38688,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1294
+      }
+    ]
+  },
+  {
+    "name": "ushe_students-ustc_students-usbe_students-dws_wages",
+    "count_documents": 37394,
+    "count_vectors": 37394,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 0
+      }
+    ]
+  },
+  {
+    "name": "ushe_students-ustc_students-dws_wages-usbe_students",
+    "count_documents": 37394,
+    "count_vectors": 37394,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 0
+      }
+    ]
+  },
+  {
+    "name": "ushe_students-usbe_students-ustc_students-dws_wages",
+    "count_documents": 37394,
+    "count_vectors": 37394,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 0
+      }
+    ]
+  },
+  {
+    "name": "ushe_students-usbe_students-dws_wages-ustc_students",
+    "count_documents": 38030,
+    "count_vectors": 38030,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 636
+      }
+    ]
+  },
+  {
+    "name": "ushe_students-dws_wages-ustc_students-usbe_students",
+    "count_documents": 38030,
+    "count_vectors": 38030,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 636
+      }
+    ]
+  },
+  {
+    "name": "ushe_students-dws_wages-usbe_students-ustc_students",
+    "count_documents": 38030,
+    "count_vectors": 38030,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 636
+      }
+    ]
+  },
+  {
+    "name": "dws_wages-ustc_students-usbe_students-ushe_students",
+    "count_documents": 38636,
+    "count_vectors": 38636,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1844
+      }
+    ]
+  },
+  {
+    "name": "dws_wages-ustc_students-ushe_students-usbe_students",
+    "count_documents": 38016,
+    "count_vectors": 38016,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 622
+      }
+    ]
+  },
+  {
+    "name": "dws_wages-usbe_students-ustc_students-ushe_students",
+    "count_documents": 38682,
+    "count_vectors": 38776,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 1
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1892
+      }
+    ]
+  },
+  {
+    "name": "dws_wages-usbe_students-ushe_students-ustc_students",
+    "count_documents": 38688,
+    "count_vectors": 38688,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 1294
+      }
+    ]
+  },
+  {
+    "name": "dws_wages-ushe_students-ustc_students-usbe_students",
+    "count_documents": 38030,
+    "count_vectors": 38030,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 636
+      }
+    ]
+  },
+  {
+    "name": "dws_wages-ushe_students-usbe_students-ustc_students",
+    "count_documents": 38030,
+    "count_vectors": 38030,
+    "flags": [
+      {
+        "name": "Rule1",
+        "count_flagged": 0
+      },
+      {
+        "name": "Rule2",
+        "count_flagged": 636
+      }
+    ]
   }
 ]

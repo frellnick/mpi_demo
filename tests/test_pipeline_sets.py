@@ -2,6 +2,7 @@
 
 from db import get_mongo, get_session
 from main import run_mpi
+from mpi.postprocess import Rule1, Rule2
 
 from random import choice
 from itertools import permutations
@@ -14,7 +15,12 @@ from .global_test_setup import testlogger
 def cleanup_and_report(name:str=None) -> dict:
     report = {}
     report['name'] = name
-    
+
+    report['flags'] = [
+            Rule1().summary,
+            Rule2().summary,
+        ]
+
     mg = get_mongo()
     res = mg.raw.delete_many({})
     mg_deleted = res.deleted_count
@@ -55,22 +61,24 @@ def run_set(tablenames:list) -> dict:
 
 
 def run_and_clip_report(
-        tablenames, keep=['name', 'count_documents', 'count_vectors']):
+        tablenames, keep=['name', 'count_documents', 'count_vectors', 'flags']):
     try:
         report = run_set(tablenames)
     except Exception as e:
-        testlogger.error(f'{e}. Could not run set {tablenames}')
+        testlogger.error(f'{e}. Could not run set {tablenames}', __name__)
+        raise e
 
     clipped = {}
     for col in keep:
-        clipped[col] = report[col]
+        if col in report:
+            clipped[col] = report[col]
     return clipped
 
 
 
 def test_ordered_ingest(datasets:list=None, output='test_report.json'):
     if datasets is None:
-        datasets = ['ustc_students', 'usbe_students', 'ushe_students']
+        datasets = ['ustc_students', 'usbe_students', 'ushe_students', 'dws_wages']
     perms = [x for x in permutations(datasets, len(datasets))]
 
     reports = []
