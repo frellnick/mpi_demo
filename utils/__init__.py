@@ -5,3 +5,5 @@ from .dfutils import (
 from .generators import (
     generate_random_mpi, gen_mpi_insert, create_mpi_vector
 )
+
+from .registry import Registry

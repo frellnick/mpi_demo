@@ -3,6 +3,7 @@
 
 from utils.filters import search_list
 from utils.dfutils import result_proxy_to_dataframe
+from utils import Registry
 from db import query_db
 from assets.mapping import blocked_identifiers
 
@@ -35,3 +36,13 @@ def test_result_proxy_to_dataframe():
     rproxy = query_db("SELECT * FROM mpi_vectors").fetchall()
     df = result_proxy_to_dataframe(rproxy) 
     assert type(df) == pd.DataFrame
+
+
+def test_registry():
+    def test_fn():
+        pass
+
+    r = Registry('test')
+    r.register(test_fn)
+
+    assert r['test_fn'] is not None

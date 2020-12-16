@@ -7,12 +7,16 @@ Create indexed view of raw data and appropriate identity view for linkage.
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
 from db import query_db, get_db
-from utils import get_column_intersect
+from utils import get_column_intersect, Registry
 from config import IDVIEWTYPE
 import logging
 
 preplogger = logging.getLogger(__name__)
 
+
+# Creating simple config registry for function assignment
+registry_idview = {}
+view_registry = Registry(name='views')
 
 ## Prepare identifying information for matching ##
 
@@ -51,9 +55,6 @@ def create_data_view(tablename: str) -> pd.DataFrame:
 ### Prepare valid identity view for matching ###
 ################################################
 
-# Creating simple config registry for function assignment
-registry_idview = {}
-
 
 # FULL: Returns
 
@@ -79,7 +80,7 @@ def _build_iframe_selection_query(*args, **kwargs):
 
 
 
-def full_id_view(*args, **kwargs) -> pd.DataFrame:
+def full(*args, **kwargs) -> pd.DataFrame:
     query = _build_iframe_selection_query(*args, **kwargs)
     preplogger.debug('Preparing identity view with: \n' + query)
     
@@ -95,12 +96,12 @@ def full_id_view(*args, **kwargs) -> pd.DataFrame:
     iframe = iframe.dropna(axis=1, how='all')
     preplogger.info(f'IFrame created with columns:\n{iframe.columns}\nlength:{len(iframe)}')
     return iframe
-registry_idview['full'] = full_id_view
+view_registry.register(full)
 
 
 # Route Function - Looks up IDVIEW fn listed in settings.ini and returns view from mapped columns
 def create_identity_view(*args, **kwargs) -> pd.DataFrame:
     preplogger.info(f'Using IDVIEWTYPE: {IDVIEWTYPE}')
-    fn = registry_idview[IDVIEWTYPE]
+    fn = view_registry[IDVIEWTYPE]
     return fn(*args, **kwargs)
 

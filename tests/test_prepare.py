@@ -1,8 +1,12 @@
 # test_prepare.py
 
 import pytest
+
+import pandas as pd
+
 from ingest import load_file
-from mpi.prepare import create_data_view, create_identity_view
+from mpi.prepare import create_data_view, create_identity_view, standardize
+from db import get_db
 
 from .global_test_setup import testlogger
 
@@ -11,6 +15,15 @@ from .global_test_setup import testlogger
 def test_table():
     load_file('assets/data/dws_wages.csv', 'dws_wages')
     return 'dws_wages'
+
+
+@pytest.fixture
+def test_frame():
+    load_file('assets/data/dws_wages.csv', 'dws_wages')
+    raw_query = f"SELECT * FROM dws_wages"
+    raw = pd.read_sql_query(raw_query, get_db())
+    return raw
+
 
 def test_create_data_view(test_table):
     testlogger.info(f'Starting Create Data View: Loading {test_table}', __name__)
@@ -24,3 +37,7 @@ def test_create_data_view(test_table):
 def test_create_identity_view(test_table):
     iview = create_identity_view()
     assert iview is not None
+
+
+def test_standardize_col_from_dataframe(test_frame):
+    assert len(test_frame) > 0
