@@ -27,5 +27,11 @@ class Registry():
     def __delitem__(self, key):
         del self.store[key]
 
+    def keys(self):
+        return list(self.store.keys())
+
     def register(self, function, **kwargs):
-        self.store[function.__name__] = function
+        if 'name' in kwargs:
+            self.store[kwargs['name']] = function
+        else:
+            self.store[function.__name__] = function

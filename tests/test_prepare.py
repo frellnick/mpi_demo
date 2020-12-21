@@ -6,6 +6,7 @@ import pandas as pd
 
 from ingest import load_file
 from mpi.prepare import create_data_view, create_identity_view, standardize
+from mpi.prepare.view import View
 from db import get_db
 
 from .global_test_setup import testlogger
@@ -39,5 +40,17 @@ def test_create_identity_view(test_table):
     assert iview is not None
 
 
-def test_standardize_col_from_dataframe(test_frame):
-    assert len(test_frame) > 0
+def test_dataframe_view(test_frame):
+    view = View(test_frame)
+    assert len(view) > 0
+    assert len(view.columns) > 0
+    assert view[view.columns[0]] is not None
+
+
+def test_standardize_data_view():
+    _, dview = create_data_view('dws_wages')
+    testlogger.debug(f"Dview Pre:\n{dview.head()}")
+    dview = standardize(dview)
+    testlogger.debug(f"Dview Post:\n{dview.head()}")
+    assert len(dview) > 0
+
