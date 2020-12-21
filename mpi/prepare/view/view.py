@@ -37,10 +37,9 @@ class View:
         return self.fn_registry['head'](self.data, nrows)
 
 
-    def consolidate(self, col_dict):
+    def update(self, col_dict):
         """
         params
         col_dict: (dictionary) dictionary of columns, where they key is the name of the column in View
         """
-        for name in col_dict.keys():
-            self.data[name] = col_dict[name]
+        self.data = self.fn_registry['update'](self.data, col_dict)

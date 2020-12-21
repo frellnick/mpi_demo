@@ -12,6 +12,7 @@ from db import get_db
 from .global_test_setup import testlogger
 
 
+
 @pytest.fixture
 def test_table():
     load_file('assets/data/dws_wages.csv', 'dws_wages')

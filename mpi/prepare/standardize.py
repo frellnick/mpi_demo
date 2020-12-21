@@ -16,7 +16,7 @@ def standardize(view):
     args = [(col, view, std_registry) for col in view.columns]
     std_cols = list(map(standardize_col, args))
     col_dict = _expand_to_dict(std_cols)
-    view.consolidate(col_dict)
+    view.update(col_dict)
     return view
 
 
@@ -52,8 +52,14 @@ def _expand_to_dict(ldicts: list) -> dict:
 
 
 def _lookup_alias(colname, colmap=colmap):
+    def _is_alias(colname):
+        return colname in colmap.values()
+
     if colname in colmap:
         return colmap[colname]
+    elif _is_alias(colname):
+        return colname
+
     return None
 
 

@@ -27,3 +27,10 @@ df_registry.register(getitem)
 def head(data: pd.DataFrame, nrows:int) -> pd.DataFrame:
     return data.head(nrows)
 df_registry.register(head)
+
+
+def update(data: pd.DataFrame, col_dict: dict) -> pd.DataFrame:
+    for key in col_dict:
+        data[key] = col_dict[key]
+    return data
+df_registry.register(update)
