@@ -10,7 +10,7 @@ from config import CLASSIFIER
 
 from ingest import load_file
 from mpi.prepare import create_data_view, create_identity_view
-from mpi.preprocess import clean_raw, match_dtype
+from mpi.prepare.preprocess import clean_raw, match_dtype
 from mpi.link import is_match_available
 from mpi.index import build_indexer
 from mpi.compare import build_comparator
