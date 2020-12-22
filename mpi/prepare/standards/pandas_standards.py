@@ -11,7 +11,7 @@ pandas_standards_registry = Registry('pandas_standards')
 
 # Standardization Functions
 
-def ssn_pool(view:View):
+def ssn_pool(view:View, colname='ssn_pool'):
     def _test_ssn(x):
         try:
             tx = str(x)
@@ -24,48 +24,48 @@ def ssn_pool(view:View):
             return int(x)
         except:
             return None
-    
-    return view['ssn_pool'].apply(_test_ssn)
+
+    return view[colname].apply(_test_ssn)
 pandas_standards_registry.register(ssn_pool)
 
 
-def guid(view:View):
-    return view['guid']
+def guid(view:View, colname='guid'):
+    return view[colname]
 pandas_standards_registry.register(guid)
 
 
-def last_name_pool(view:View):
-    return view['last_name_pool']
+def last_name_pool(view:View, colname='last_name_pool'):
+    return view[colname]
 pandas_standards_registry.register(last_name_pool)
 
 
-def first_name_pool(view:View):
-    return view['first_name_pool']
+def first_name_pool(view:View, colname='first_name_pool'):
+    return view[colname]
 pandas_standards_registry.register(first_name_pool)
 
 
-def middle_name_pool(view:View):
-    return view['middle_name_pool']
+def middle_name_pool(view:View, colname='middle_name_pool'):
+    return view[colname]
 pandas_standards_registry.register(middle_name_pool)
 
 
-def student_id_pool(view:View):
-    return view['student_id_pool']
+def student_id_pool(view:View, colname='student_id_pool'):
+    return view[colname]
 pandas_standards_registry.register(student_id_pool)
 
 
-def ssid_pool(view:View):
-    return view['ssid_pool']
+def ssid_pool(view:View, colname='ssid_pool'):
+    return view[colname]
 pandas_standards_registry.register(ssid_pool)
 
 
-def gender_pool(view:View):
-    return view['gender_pool']
+def gender_pool(view:View, colname='gender_pool'):
+    return view[colname]
 pandas_standards_registry.register(gender_pool)
 
 
-def birth_date_pool(view:View):
-    return view['birth_date_pool']
+def birth_date_pool(view:View, colname='birth_date_pool'):
+    return view[colname]
 pandas_standards_registry.register(birth_date_pool)
 
 

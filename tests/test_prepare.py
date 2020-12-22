@@ -48,8 +48,8 @@ def test_dataframe_view(test_frame):
     assert view[view.columns[0]] is not None
 
 
-def test_standardize_data_view():
-    _, dview = create_data_view('dws_wages')
+def test_standardize_data_view(test_frame):
+    dview = test_frame
     testlogger.debug(f"Dview Pre:\n{dview.head()}")
     dview = standardize(dview)
     testlogger.debug(f"Dview Post:\n{dview.head()}")

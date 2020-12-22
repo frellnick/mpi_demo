@@ -6,6 +6,8 @@ Create indexed view of raw data and appropriate identity view for linkage.
 
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
+from .preprocess import clean_raw
+from .standardize import standardize
 from db import query_db, get_db
 from utils import get_column_intersect, Registry
 from config import IDVIEWTYPE
@@ -35,6 +37,15 @@ def _filter_mapped_columns(tablename: str) -> str:
     return ','.join(mapped_cols)
 
 
+def prepare_frame(frame) -> pd.DataFrame:
+    # Deduplicate  ## TODO: create view earlier in process
+    v = frame.drop_duplicates()
+    # Clean data
+    v = clean_raw(v)
+    # Standardize data
+    return standardize(v)
+
+
 
 def create_data_view(tablename: str) -> pd.DataFrame:
     mapped_columns = _filter_mapped_columns(tablename)
@@ -46,7 +57,7 @@ def create_data_view(tablename: str) -> pd.DataFrame:
     preplogger.info(f'Data View created with \
         columns:\n{raw.columns}\nlength: {len(raw)}\nsubset contains:\n{subset.columns}'
         )
-    return raw, subset
+    return prepare_frame(raw)
 
 
 

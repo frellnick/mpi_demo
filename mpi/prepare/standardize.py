@@ -37,7 +37,7 @@ def standardize_col(*args, **kwargs):
     try:
         alias = _lookup_alias(colname)
         if alias is not None:
-            return {colname: registry[alias](view)}
+            return {colname: registry[alias](view, colname)}
         return None
     except Exception as e:
         raise e
