@@ -12,7 +12,9 @@ def compare_in(colname, searchlist):
 
 
 def union_frames(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
-    return pd.concat([t1, t2], ignore_index=True)
+    df = pd.concat([t1, t2], ignore_index=True)
+    utillogger.info(f"Union Frames successful created dataframe of length {len(df)}")
+    return df
 
 
 def get_column_intersect(dfa: pd.DataFrame, dfb: pd.DataFrame) -> list:

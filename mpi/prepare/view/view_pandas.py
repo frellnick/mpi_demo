@@ -38,22 +38,30 @@ df_registry.register(update)
 
 
 def subset(data: pd.DataFrame, context: dict, colmap = colmap) -> pd.DataFrame:
-    def _filter_mapped_columns(table_columns: list) -> list:
-        def _rename_column(col):
-            pool_name = colmap[col]  # get standard name from mapping
-            if pool_name in local_identifiers:
-                return f"{context['partner']}_{pool_name}".lower() # Prepend partner name to base column name
-            return pool_name
-
-        mapped_columns = [col for col in table_columns if col in colmap.keys()]
-        renaming = {}
-        [renaming.update({col:_rename_column(col)}) for col in mapped_columns]
-        return mapped_columns, renaming
-
-    mc, rn = _filter_mapped_columns(data.columns)
+    mc, rn = filter_mapped_columns(data.columns)
     s = data[mc].copy()
     s = s.drop_duplicates()
     s = s.rename(rn, axis=1)
     return s
 df_registry.register(subset)
 
+
+def merge(left: pd.DataFrame, right: pd.DataFrame) -> pd.DataFrame:
+    
+    return pd.merge(left, right, how='left', left_on=std_columns, right_on=std_columns)
+df_registry.register(merge)
+
+
+
+## General Utilities ##
+def filter_mapped_columns(table_columns: list) -> list:
+    def _rename_column(col):
+        pool_name = colmap[col]  # get standard name from mapping
+        if pool_name in local_identifiers:
+            return f"{context['partner']}_{pool_name}".lower() # Prepend partner name to base column name
+        return pool_name
+
+    mapped_columns = [col for col in table_columns if col in colmap.keys()]
+    renaming = {}
+    [renaming.update({col:_rename_column(col)}) for col in mapped_columns]
+    return mapped_columns, renaming

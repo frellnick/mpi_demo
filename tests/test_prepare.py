@@ -35,7 +35,8 @@ def test_create_data_view(test_table):
 
 
 def test_create_identity_view(test_table):
-    iview = create_identity_view()
+    dview = create_data_view(test_table)
+    iview = create_identity_view(mapped_columns=dview.subset.columns)
     assert iview is not None
 
 

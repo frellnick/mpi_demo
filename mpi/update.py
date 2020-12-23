@@ -11,6 +11,8 @@ from db import (
     write_mpi_data
 )
 
+from mpi.prepare import View
+
 from assets.mapping import colmap
 
 import pandas as pd
@@ -73,7 +75,21 @@ def update_mpi_vector_table():
 
 
 
-
+def write_matched_unmatched(matched: pd.DataFrame, unmatched: pd.DataFrame):
+    # Update Identity Pool by writing updates or new entries
+    try:
+        if len(matched) > 0:
+            write_mpi_data(gen_mpi_insert(matched), update=True)
+    except Exception as e:
+        updatelogger.error(f'Could not write matched data to MPI table. {e}')
+        raise e
+    try:
+        if len(unmatched) > 0:
+            write_mpi_data(gen_mpi_insert(unmatched), update=False)
+    except Exception as e:
+        updatelogger.error(f'Could not write unmatched data to MPI table. {e}')
+        raise e
+    
 
 ##################################
 ### Lookup & Generation of MPI ###
@@ -99,14 +115,33 @@ def _multiindex_to_dict(iterable):
 
 
 
-def append_mpi(source_clean, id_clean, matches):
-    source_clean['mpi'] = source_clean.index.to_numpy()
-    match_dict = _multiindex_to_dict(matches)
-    source_clean['mpi'] = source_clean['mpi'].apply(_lookup_mpi, args=(id_clean, match_dict))
+def append_mpi(source_clean: pd.DataFrame, id_clean: pd.DataFrame, links_pred: pd.MultiIndex) -> tuple:
+    """
+        Append MPI
+
+        Params
+        source_clean: deduped subset, processed during linkage
+        id_clean: deduped identity view, processed during linkage
+        links_pred: multi-index from classification step
+    """
+    def _match_available(source_clean, id_clean, matches) -> tuple:
+        source_clean['mpi'] = source_clean.index.to_numpy()
+        match_dict = _multiindex_to_dict(matches)
+        source_clean['mpi'] = source_clean['mpi'].apply(_lookup_mpi, args=(id_clean, match_dict))
+        
+        # Split source_clean into matched and unmatched
+        matched = source_clean[source_clean.mpi.notna()]
+        unmatched = source_clean[source_clean.mpi.isna()]
+        return matched, unmatched
+
+    matched, unmatched = _match_available(source_clean, id_clean, links_pred)
+    updatelogger.info(f"Matched {len(matched)} records.  Unmatched {len(unmatched)} records.")
+
+    # Generate MPI's for unmatched rows
+    unmatched = generate_mpi(unmatched)
+    updatelogger.debug(f"Unmatched frame showing {len(unmatched[unmatched.mpi.notna()])} \
+        of {len(unmatched)} MPI generated.")
     
-    # Split source_clean into matched and unmatched
-    matched = source_clean[source_clean.mpi.notna()]
-    unmatched = source_clean[source_clean.mpi.isna()]
     return matched, unmatched
 
 
@@ -129,47 +164,15 @@ def _remove_index_col(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 
 
-def expand_match_to_raw(raw, subset, source_clean, id_clean, links_pred):
+def expand_match_to_view(view: View, combined: pd.DataFrame):
     """
+        Expand Match to View
         Params
-        raw:    unaltered select statement from source table
-        subset: identiy view of raw source table (columns renamed)
-        source_clean: deduped subset, processed during linkage
-        id_clean: deduped identity view, processed during linkage
-        links_pred: multi-index from classification step
+        view: Data view of source dataset
+        combined: Deduplicated matched dataframe
     """
-    # Append MPI to matched rows in source_clean
-    matched, unmatched = append_mpi(source_clean, id_clean, links_pred)
-    updatelogger.info(f"Matched {len(matched)} records.  Unmatched {len(unmatched)} records.")
-    
-    # Generate MPI's for unmatched rows
-    unmatched = generate_mpi(unmatched)
-    updatelogger.debug(f"Unmatched frame showing {len(unmatched[unmatched.mpi.notna()])} \
-        of {len(unmatched)} MPI generated.")
-    
-    # Update Identity Pool by writing updates or new entries
-    try:
-        if len(matched) > 0:
-            write_mpi_data(gen_mpi_insert(matched), update=True)
-    except Exception as e:
-        updatelogger.error(f'Could not write matched data to MPI table. {e}')
-    try:
-        if len(unmatched) > 0:
-            write_mpi_data(gen_mpi_insert(unmatched), update=False)
-    except Exception as e:
-        updatelogger.error(f'Could not write unmatched data to MPI table. {e}')
-
-    # Combine matched and unmatched (newly generated) datasets
-    combined = union_frames(matched, unmatched)
-    updatelogger.info(f"Combined matched, unmatched, frame shows {len(combined[combined.mpi.notna()])} mpi.")
 
     # Expand deduped matches to full identity table
-    std_columns = [col for col in combined if col != 'mpi']
-    mapped_ids = pd.merge(subset, combined, how='left', left_on=std_columns, right_on=std_columns)
-
-    # Match mpi with corresponding indices in raw table
-    updated = raw
-    updated = _remove_index_col(updated)
-    updated['mpi'] = mapped_ids.mpi
-    updatelogger.info(f'Final output {len(updated[updated.mpi.notna()])} of {len(updated)} records assigned MPI')
-    return updated, matched, unmatched
+    mapped = view.merge(combined)
+    updatelogger.info(f'Final output {len(mapped[mapped.mpi.notna()])} of {len(view)} records assigned MPI')
+    return mapped

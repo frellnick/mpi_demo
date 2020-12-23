@@ -10,13 +10,12 @@ from config import CLASSIFIER
 
 from ingest import load_file
 from mpi.prepare import create_data_view, create_identity_view
-from mpi.prepare.preprocess import match_dtype
 from mpi.link import is_match_available
 from mpi.index import build_indexer
 from mpi.compare import build_comparator
 from mpi.classify import build_classifier, estimate_true
 from mpi.update import (
-    generate_mpi, expand_match_to_raw, update_mpi_vector_table, write_mpi_data, gen_mpi_insert
+    generate_mpi, expand_match_to_view, update_mpi_vector_table, write_mpi_data, gen_mpi_insert
 )
 from mpi.evaluate import simple_evaluation
 

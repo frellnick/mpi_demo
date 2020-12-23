@@ -56,3 +56,12 @@ class View:
         col_dict: (dictionary) dictionary of columns, where they key is the name of the column in View
         """
         self.data = self.fn_registry['update'](self.data, col_dict)
+
+
+    def merge(self, view_or_dataframe):
+        if type(view_or_dataframe) == View:
+            df = view_or_dataframe.data
+        else:
+            df = view_or_dataframe
+        
+        return self.fn_registry['merge'](self.data, df)
