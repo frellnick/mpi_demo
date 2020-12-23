@@ -2,7 +2,8 @@
 
 from utils import (
     union_frames,
-    generate_random_mpi, gen_mpi_insert, create_mpi_vector
+    generate_random_mpi, gen_mpi_insert, create_mpi_vector,
+    extract_dataframe
 )
 
 from db import (
@@ -113,7 +114,7 @@ def append_mpi(source_clean, id_clean, matches):
 def generate_mpi(unmatched: pd.DataFrame):
     """ Generate MPI for unmatched identities. """
     updatelogger.info(f'Creating {len(unmatched)} identities')
-    temp = unmatched.copy()
+    temp = extract_dataframe(unmatched).copy()
     if 'mpi' not in temp.columns:
         temp['mpi'] = None
     temp['mpi'] = temp.mpi.apply(generate_random_mpi)

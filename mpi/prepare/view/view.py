@@ -12,10 +12,11 @@ import pandas as pd
 from .view_pandas import df_registry
 
 class View:
-    def __init__(self, data):
+    def __init__(self, data, context: dict = None):
         if type(data) == pd.DataFrame:
             self.data = data
             self.fn_registry = df_registry
+            self.context = context
         else:
             raise NotImplementedError('Unable to initialize abstract database table view')
 
@@ -31,6 +32,18 @@ class View:
     @property 
     def columns(self):
         return self.fn_registry['columns'](self.data)
+
+
+    @property
+    def subset(self):
+        if hasattr(self, '_subset'):
+            return self._subset
+
+        if self.context is not None:
+            self._subset = self.fn_registry['subset'](self.data, self.context)
+        else:
+            self._subset = self.fn_registry['subset'](self.data)
+        return self._subset
 
 
     def head(self, nrows=5):

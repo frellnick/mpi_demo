@@ -2,7 +2,7 @@ import pandas as pd
 
 import logging
 
-mutillogger = logging.getLogger(__name__)
+utillogger = logging.getLogger(__name__)
 
 def compare_in(colname, searchlist):
     cond1 = colname in searchlist
@@ -16,11 +16,15 @@ def union_frames(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_column_intersect(dfa: pd.DataFrame, dfb: pd.DataFrame) -> list:
-    assert type(dfa) == pd.DataFrame
-    assert type(dfb) == pd.DataFrame
-    c1 = set(dfa.columns.to_list())
-    c2 = set(dfb.columns.to_list())
-    return list(c1.intersection(c2))
+    try:
+        assert len(dfa.columns) > 0
+        assert len(dfb.columns) > 0
+        c1 = set(dfa.columns)
+        c2 = set(dfb.columns)
+        return list(c1.intersection(c2))
+    except AssertionError as e:
+        utillogger.info(f"Could not find intersection. {e}")
+        return []
 
 
 def match_dataframe_columns(t1: pd.DataFrame, t2: pd.DataFrame) -> tuple:
@@ -37,3 +41,38 @@ def result_proxy_to_dataframe(resultproxy):
             d = {**d, **{column: value}}
         a.append(d)
     return pd.DataFrame.from_records(a)
+
+
+def match_dtype(df1: pd.DataFrame, df2: pd.DataFrame):
+    valid_columns = get_column_intersect(df1, df2)
+
+    df1 = extract_dataframe(df1)
+    df2 = extract_dataframe(df2)
+
+    for row in df1[valid_columns].dtypes.iteritems():
+        col = row[0]
+        if col in df1.columns:
+            try:
+                df2[col] = df2[col].astype(row[1])
+                utillogger.info(f"Column {col} attempting cast to {row[1]}")
+            except ValueError:
+                utillogger.info(f"Casting of ID Column {col} failed.  Attempting pd.to_numeric.")
+                df2[col] = pd.to_numeric(df2[col])
+                df1[col] = pd.to_numeric(df1[col].astype(float))
+                utillogger.info(f"Data.Type {df1[col].dtype}; ID.Type {df2[col].dtype}")
+            except Exception as e:
+                utillogger.error(f'Could not cast columns {col}\n{e}')
+    return df1, df2
+
+
+def extract_dataframe(v) -> pd.DataFrame:
+    """
+    Extract Dataframe
+        Tries to extract data attribute from object.  Assists in 
+        working directly with View types.
+    """
+
+    try:
+        return v.data 
+    except:
+        return v

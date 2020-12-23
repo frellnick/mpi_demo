@@ -7,6 +7,7 @@ Create indexed view of raw data and appropriate identity view for linkage.
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
 from .standardize import standardize
+from .view import View
 from db import query_db, get_db
 from db.common import get_table_columns
 from utils import Registry
@@ -21,28 +22,14 @@ registry_idview = {}
 view_registry = Registry(name='views')
 
 ## Prepare identifying information for matching ##
-
-def _filter_mapped_columns(tablename: str) -> str:
-    def _rename_column(col):
-        pool_name = colmap[col]  # get standard name from mapping
-        if pool_name in local_identifiers:
-            return ' '.join([col, 'AS', tablename.split('_')[0] + '_' + pool_name]).lower()
-        return ' '.join([col, 'AS', pool_name]).lower()
-
-    table_columns = query_db(
-        f"SELECT * FROM {tablename}"
-    ).first().keys()
-    preplogger.debug(f'Querying for column names of {tablename}. Returned: {table_columns}')
-    mapped_cols = [_rename_column(col) for col in table_columns if col in colmap.keys()]
-    return ','.join(mapped_cols)
-
-
 def create_data_view(tablename: str) -> pd.DataFrame:
     raw_query = f"SELECT * FROM {tablename}"
-    dview = prepare_frame(pd.read_sql_query(raw_query, get_db()))
-    preplogger.info(f'Data View created with columns:\n{dview.columns}\nlength: {len(dview)}')
-    return dview
+    dview = View(pd.read_sql_query(raw_query, get_db()), context={'partner': tablename.split('_')[0]})
 
+    preplogger.info(f'Data View created with statement:\n{raw_query}')
+    preplogger.info(f'Data View created with columns:\n{dview.columns}\nlength: {len(dview)}')
+
+    return dview
 
 
 
@@ -85,8 +72,8 @@ def full(*args, **kwargs) -> pd.DataFrame:
         iframe.drop('index', axis=1, inplace=True)
 
     iframe = iframe.dropna(axis=1, how='all')
-    preplogger.info(f'IFrame created with columns:\n{iframe.columns}\nlength:{len(iframe)}')
-    return prepare_frame(iframe)
+    preplogger.info(f'IView created with columns:\n{iframe.columns}\nlength:{len(iframe)}')
+    return View(iframe)
 view_registry.register(full)
 
 
@@ -100,13 +87,6 @@ def create_identity_view(*args, **kwargs) -> pd.DataFrame:
 
 
 ## Utility Functions
-def prepare_frame(frame) -> pd.DataFrame:
-    # Deduplicate
-    v = frame.drop_duplicates()
-    # Standardize data
-    return standardize(v)
-
-
 def get_intersection(i1, i2) -> set:
     def _cast_set(x) -> set:
         if type(x) == set:

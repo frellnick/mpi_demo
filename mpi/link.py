@@ -37,5 +37,6 @@ def _check_demographic(available_columns):
 
 def is_match_available(dview, iview):
     available_columns = get_column_intersect(dview, iview)
+    print('checking available columns', available_columns)
     return (_check_numeric(available_columns) or _check_demographic(available_columns)) \
                 and (len(iview) > 1)
