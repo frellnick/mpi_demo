@@ -15,20 +15,6 @@ import logging
 preplogger = logging.getLogger(__name__)
 
 
-
-def clean_raw(df: pd.DataFrame, exclude = ['date', 'mpi']):
-    def _is_excluded(col:str, exclude:list) -> bool:
-        return True in [e in col for e in exclude]
-
-    obj_columns = df.select_dtypes(include='object').columns
-    temp = df.copy()
-    for col in obj_columns:
-        if not _is_excluded(col, exclude):
-            temp[col] = clean(temp[col])
-    return temp
-
-
-
 def match_dtype(dview: pd.DataFrame, iview: pd.DataFrame):
     valid_columns = get_column_intersect(dview, iview)
     df1 = dview.copy()

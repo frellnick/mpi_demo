@@ -5,6 +5,7 @@ from utils import Registry
 from assets.mapping import colmap
 from mpi.prepare.view import View
 
+from recordlinkage.preprocessing import clean
 
 pandas_standards_registry = Registry('pandas_standards')
 
@@ -35,17 +36,17 @@ pandas_standards_registry.register(guid)
 
 
 def last_name_pool(view:View, colname='last_name_pool'):
-    return view[colname]
+    return clean(view[colname])
 pandas_standards_registry.register(last_name_pool)
 
 
 def first_name_pool(view:View, colname='first_name_pool'):
-    return view[colname]
+    return clean(view[colname])
 pandas_standards_registry.register(first_name_pool)
 
 
 def middle_name_pool(view:View, colname='middle_name_pool'):
-    return view[colname]
+    return clean(view[colname])
 pandas_standards_registry.register(middle_name_pool)
 
 

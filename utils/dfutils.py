@@ -16,6 +16,8 @@ def union_frames(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_column_intersect(dfa: pd.DataFrame, dfb: pd.DataFrame) -> list:
+    assert type(dfa) == pd.DataFrame
+    assert type(dfb) == pd.DataFrame
     c1 = set(dfa.columns.to_list())
     c2 = set(dfb.columns.to_list())
     return list(c1.intersection(c2))

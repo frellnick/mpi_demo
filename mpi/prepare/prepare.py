@@ -6,10 +6,10 @@ Create indexed view of raw data and appropriate identity view for linkage.
 
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
-from .preprocess import clean_raw
 from .standardize import standardize
 from db import query_db, get_db
-from utils import get_column_intersect, Registry
+from db.common import get_table_columns
+from utils import Registry
 from config import IDVIEWTYPE
 import logging
 
@@ -37,27 +37,11 @@ def _filter_mapped_columns(tablename: str) -> str:
     return ','.join(mapped_cols)
 
 
-def prepare_frame(frame) -> pd.DataFrame:
-    # Deduplicate  ## TODO: create view earlier in process
-    v = frame.drop_duplicates()
-    # Clean data
-    v = clean_raw(v)
-    # Standardize data
-    return standardize(v)
-
-
-
 def create_data_view(tablename: str) -> pd.DataFrame:
-    mapped_columns = _filter_mapped_columns(tablename)
-    ident_query = f"SELECT {mapped_columns} FROM {tablename}"
     raw_query = f"SELECT * FROM {tablename}"
-    preplogger.debug(ident_query)
-    raw = pd.read_sql_query(raw_query, get_db())
-    subset = pd.read_sql_query(ident_query, get_db())  ## Deprecate for in-memory mapping
-    preplogger.info(f'Data View created with \
-        columns:\n{raw.columns}\nlength: {len(raw)}\nsubset contains:\n{subset.columns}'
-        )
-    return prepare_frame(raw)
+    dview = prepare_frame(pd.read_sql_query(raw_query, get_db()))
+    preplogger.info(f'Data View created with columns:\n{dview.columns}\nlength: {len(dview)}')
+    return dview
 
 
 
@@ -70,24 +54,20 @@ def create_data_view(tablename: str) -> pd.DataFrame:
 # FULL: Returns
 
 def _build_iframe_selection_query(*args, **kwargs):
-    def _add_scores_to_list(valid_columns, available_id_columns):
-        for name in available_id_columns:
+    assert 'mapped_columns' in kwargs, "Must supply kwarg mapped_columns: list of columns to make iview from."
+    def _get_score_columns(columns):
+        t = []
+        for name in columns:
             if 'score' in name:
-                valid_columns.append(name)
-        return valid_columns
+                t.append(name)
+        return t
 
-    query = "SELECT * FROM mpi_vectors LIMIT 1"
-    check_selection = pd.read_sql(query, get_db())
-    if 'mapped_columns' in kwargs:
-        valid_columns = get_column_intersect(
-            check_selection, pd.DataFrame(columns=kwargs['mapped_columns'])
-            )
-        valid_columns = _add_scores_to_list(valid_columns, check_selection.columns.to_list())
-        valid_columns.append('mpi')
-        query = f"SELECT {','.join(valid_columns)} from mpi_vectors"
-    else:
-        query = "SELECT * FROM mpi_vectors"
-    return query
+    mpi_columns, _ = get_table_columns('mpi_vectors')
+    iframe_columns = get_intersection(mpi_columns, kwargs['mapped_columns'])
+    [iframe_columns.add(x) for x in _get_score_columns(mpi_columns)]
+    iframe_columns.add('mpi')
+
+    return f"SELECT {','.join(iframe_columns)} from mpi_vectors"
 
 
 
@@ -106,7 +86,7 @@ def full(*args, **kwargs) -> pd.DataFrame:
 
     iframe = iframe.dropna(axis=1, how='all')
     preplogger.info(f'IFrame created with columns:\n{iframe.columns}\nlength:{len(iframe)}')
-    return iframe
+    return prepare_frame(iframe)
 view_registry.register(full)
 
 
@@ -116,3 +96,23 @@ def create_identity_view(*args, **kwargs) -> pd.DataFrame:
     fn = view_registry[IDVIEWTYPE]
     return fn(*args, **kwargs)
 
+
+
+
+## Utility Functions
+def prepare_frame(frame) -> pd.DataFrame:
+    # Deduplicate
+    v = frame.drop_duplicates()
+    # Standardize data
+    return standardize(v)
+
+
+def get_intersection(i1, i2) -> set:
+    def _cast_set(x) -> set:
+        if type(x) == set:
+            return x 
+        return set(x)
+    
+    a = _cast_set(i1)
+    b = _cast_set(i2)
+    return a.intersection(b)

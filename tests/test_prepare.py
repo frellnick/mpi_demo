@@ -29,11 +29,9 @@ def test_frame():
 
 def test_create_data_view(test_table):
     testlogger.info(f'Starting Create Data View: Loading {test_table}', __name__)
-    raw, dview = create_data_view(test_table)
-    assert raw is not None
+    dview = create_data_view(test_table)
     assert dview is not None
-    assert len(raw.columns) >= len(dview.columns)
-    assert len(raw) >= len(dview)
+    assert len(dview.columns) > 0
 
 
 def test_create_identity_view(test_table):
