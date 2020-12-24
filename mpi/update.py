@@ -98,7 +98,7 @@ def write_matched_unmatched(matched: pd.DataFrame, unmatched: pd.DataFrame):
 def _lookup_mpi(ind: int, id_clean: pd.DataFrame, match_dict):
     if ind in match_dict:
         try:
-            return id_clean.iloc[match_dict[ind]].mpi
+            return id_clean.loc[match_dict[ind]].mpi
         except TypeError as e:
             updatelogger.error(f'Could not index MPI.\nIDX: {ind}\ id_clean:\n {id_clean.head()}\nmatch_dict[ind]: {match_dict[ind]}')
             raise e

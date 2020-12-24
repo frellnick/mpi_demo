@@ -1,7 +1,7 @@
 # view_pandas.py
 
 
-from utils import Registry
+from utils import Registry, get_column_intersect
 import pandas as pd
 from assets.mapping import colmap, local_identifiers
 
@@ -38,13 +38,13 @@ df_registry.register(update)
 
 
 def subset(data: pd.DataFrame, context: dict, colmap = colmap) -> pd.DataFrame:
-    s = map_columns(data, context, colmap)
+    s = map_columns(data, context, colmap, trim=True)
     s = s.drop_duplicates()
     return s
 df_registry.register(subset)
 
 
-def merge(left: pd.DataFrame, right: pd.DataFrame, context: dict, colmap = colmap, map_left=True, map_right=False) -> pd.DataFrame:
+def merge(left: pd.DataFrame, right: pd.DataFrame, context: dict, colmap = colmap, map_left=True, map_right=False, keep=['mpi']) -> pd.DataFrame:
     if map_left:
         l = map_columns(left, context, colmap)
     else:
@@ -54,7 +54,13 @@ def merge(left: pd.DataFrame, right: pd.DataFrame, context: dict, colmap = colma
     else:
         r = right
 
-    return pd.merge(l, r, how='left', left_on=std_columns, right_on=std_columns)
+    mcols = get_column_intersect(l, r)
+    t = pd.merge(l, r, how='left', left_on=mcols, right_on=mcols)
+    for k in keep:
+        left[k] = t[k]
+    return left
+
+
 df_registry.register(merge)
 
 
@@ -73,8 +79,11 @@ def filter_mapped_columns(table_columns: list, context: dict, colmap = colmap) -
     return mapped_columns, renaming
 
 
-def map_columns(df: pd.DataFrame, context: dict, colmap: dict) -> pd.DataFrame:
+def map_columns(df: pd.DataFrame, context: dict, colmap: dict, trim=False) -> pd.DataFrame:
     mc, rn = filter_mapped_columns(df.columns, context, colmap)
-    a = df.copy()
-    a = df.rename(rn, axis=1)
+    if trim:
+        a = df[mc].copy()
+    else:
+        a = df.copy()
+    a = a.rename(rn, axis=1)
     return a
