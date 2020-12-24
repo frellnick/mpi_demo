@@ -60,8 +60,9 @@ class View:
 
     def merge(self, view_or_dataframe):
         if type(view_or_dataframe) == View:
-            df = view_or_dataframe.data
+            right = view_or_dataframe.data
         else:
-            df = view_or_dataframe
+            right = view_or_dataframe
+        left = self.data
         
-        return self.fn_registry['merge'](self.data, df)
+        return self.fn_registry['merge'](left, right, self.context)

@@ -19,7 +19,7 @@ def test_frame():
 
 def test_view_subset(test_frame):
     v = View(test_frame, context={'partner':'dws'})
-    assert len(v.subset.columns) < len(v.columns)
+    assert len(v.subset.columns) <= len(v.columns)
 
 
 def test_view_merge(test_frame):

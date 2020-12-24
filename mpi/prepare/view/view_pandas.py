@@ -38,17 +38,21 @@ df_registry.register(update)
 
 
 def subset(data: pd.DataFrame, context: dict, colmap = colmap) -> pd.DataFrame:
-    mc, rn = filter_mapped_columns(data.columns, context, colmap)
-    s = data[mc].copy()
+    s = map_columns(data, context, colmap)
     s = s.drop_duplicates()
-    s = s.rename(rn, axis=1)
     return s
 df_registry.register(subset)
 
 
-def merge(left: pd.DataFrame, right: pd.DataFrame) -> pd.DataFrame:
-    l = left.copy()
-    mc, rn = filter_mapped_columns(left.columns)
+def merge(left: pd.DataFrame, right: pd.DataFrame, context: dict, colmap = colmap, map_left=True, map_right=False) -> pd.DataFrame:
+    if map_left:
+        l = map_columns(left, context, colmap)
+    else:
+        l = left 
+    if map_right:
+        r = map_columns(right, context, colmap)
+    else:
+        r = right
 
     return pd.merge(l, r, how='left', left_on=std_columns, right_on=std_columns)
 df_registry.register(merge)
@@ -67,3 +71,10 @@ def filter_mapped_columns(table_columns: list, context: dict, colmap = colmap) -
     renaming = {}
     [renaming.update({col:_rename_column(col, context, colmap)}) for col in mapped_columns]
     return mapped_columns, renaming
+
+
+def map_columns(df: pd.DataFrame, context: dict, colmap: dict) -> pd.DataFrame:
+    mc, rn = filter_mapped_columns(df.columns, context, colmap)
+    a = df.copy()
+    a = df.rename(rn, axis=1)
+    return a

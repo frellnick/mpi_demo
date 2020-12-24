@@ -9,6 +9,8 @@ from mpi.prepare import create_data_view, create_identity_view, standardize
 from mpi.prepare.view import View
 from db import get_db
 
+from assets.mapping import colmap
+
 from .global_test_setup import testlogger
 
 
@@ -38,6 +40,8 @@ def test_create_identity_view(test_table):
     dview = create_data_view(test_table)
     iview = create_identity_view(mapped_columns=dview.subset.columns)
     assert iview is not None
+    for col in iview.columns:
+        assert col=='mpi' or (col in colmap.values()), f'{col} not valid mapped column'
 
 
 def test_dataframe_view(test_frame):
