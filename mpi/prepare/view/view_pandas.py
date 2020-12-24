@@ -39,7 +39,6 @@ df_registry.register(update)
 
 def subset(data: pd.DataFrame, context: dict, colmap = colmap) -> pd.DataFrame:
     s = map_columns(data, context, colmap, trim=True)
-    s = s.drop_duplicates()
     return s
 df_registry.register(subset)
 
@@ -56,9 +55,9 @@ def merge(left: pd.DataFrame, right: pd.DataFrame, context: dict, colmap = colma
 
     mcols = get_column_intersect(l, r)
     t = pd.merge(l, r, how='left', left_on=mcols, right_on=mcols)
-    for k in keep:
-        left[k] = t[k]
-    return left
+    print(r.head())
+    print(t.head())
+    return left[keep]
 
 
 df_registry.register(merge)

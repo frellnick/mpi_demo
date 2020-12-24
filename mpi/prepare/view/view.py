@@ -58,11 +58,22 @@ class View:
         self.data = self.fn_registry['update'](self.data, col_dict)
 
 
-    def merge(self, view_or_dataframe):
+    def merge(self, view_or_dataframe, use_standardized=False):
         if type(view_or_dataframe) == View:
             right = view_or_dataframe.data
         else:
             right = view_or_dataframe
-        left = self.data
+
+        if use_standardized:
+            try:
+                left = self.standardized 
+            except Exception as e:
+                raise e
+        else:
+            left = self.subset
         
-        return self.fn_registry['merge'](left, right, self.context)
+        aligned = self.fn_registry['merge'](left, right, self.context)
+        t = self.data
+        for col in aligned:
+            t[col] = aligned[col]
+        return t

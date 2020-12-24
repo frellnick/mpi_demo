@@ -1,6 +1,7 @@
 # standardize.py
 
-from .view import View
+from .view import View  ## TODO: Remove view dependency from standardization module or figure out how to call 
+                        ##  standardization from View member
 from assets.mapping import colmap
 from .standards import pandas_standards_registry
 
@@ -22,9 +23,9 @@ def standardize(view):
 
 def _setup_standardization(view):
     if type(view) == pd.DataFrame:
-        return View(view), pandas_standards_registry
+        return View(view), pandas_standards_registry  #TODO: Infer registry type
     elif type(view) == View:
-        return View 
+        return view, pandas_standards_registry  #TODO: Infer registry type
     raise NotImplementedError(f'Cannot process data of type {type(view)}')
 
 

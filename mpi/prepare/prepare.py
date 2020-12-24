@@ -29,6 +29,7 @@ def create_data_view(tablename: str) -> pd.DataFrame:
     preplogger.info(f'Data View created with statement:\n{raw_query}')
     preplogger.info(f'Data View created with columns:\n{dview.columns}\nlength: {len(dview)}')
 
+    dview.standardized = standardize(dview.subset).data
     return dview
 
 
