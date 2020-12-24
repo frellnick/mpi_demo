@@ -38,7 +38,7 @@ df_registry.register(update)
 
 
 def subset(data: pd.DataFrame, context: dict, colmap = colmap) -> pd.DataFrame:
-    mc, rn = filter_mapped_columns(data.columns)
+    mc, rn = filter_mapped_columns(data.columns, context, colmap)
     s = data[mc].copy()
     s = s.drop_duplicates()
     s = s.rename(rn, axis=1)
@@ -47,15 +47,17 @@ df_registry.register(subset)
 
 
 def merge(left: pd.DataFrame, right: pd.DataFrame) -> pd.DataFrame:
-    
-    return pd.merge(left, right, how='left', left_on=std_columns, right_on=std_columns)
+    l = left.copy()
+    mc, rn = filter_mapped_columns(left.columns)
+
+    return pd.merge(l, r, how='left', left_on=std_columns, right_on=std_columns)
 df_registry.register(merge)
 
 
 
 ## General Utilities ##
-def filter_mapped_columns(table_columns: list) -> list:
-    def _rename_column(col):
+def filter_mapped_columns(table_columns: list, context: dict, colmap = colmap) -> list:
+    def _rename_column(col, context: dict, colmap = colmap):
         pool_name = colmap[col]  # get standard name from mapping
         if pool_name in local_identifiers:
             return f"{context['partner']}_{pool_name}".lower() # Prepend partner name to base column name
@@ -63,5 +65,5 @@ def filter_mapped_columns(table_columns: list) -> list:
 
     mapped_columns = [col for col in table_columns if col in colmap.keys()]
     renaming = {}
-    [renaming.update({col:_rename_column(col)}) for col in mapped_columns]
+    [renaming.update({col:_rename_column(col, context, colmap)}) for col in mapped_columns]
     return mapped_columns, renaming
