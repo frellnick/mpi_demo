@@ -43,7 +43,7 @@ def subset(data: pd.DataFrame, context: dict, colmap = colmap) -> pd.DataFrame:
 df_registry.register(subset)
 
 
-def merge(left: pd.DataFrame, right: pd.DataFrame, context: dict, colmap = colmap, map_left=True, map_right=False, keep=['mpi']) -> pd.DataFrame:
+def merge(left: pd.DataFrame, right: pd.DataFrame, context: dict, colmap = colmap, map_left=True, map_right=False) -> pd.DataFrame:
     if map_left:
         l = map_columns(left, context, colmap)
     else:
@@ -54,11 +54,7 @@ def merge(left: pd.DataFrame, right: pd.DataFrame, context: dict, colmap = colma
         r = right
 
     mcols = get_column_intersect(l, r)
-    t = pd.merge(l, r, how='left', left_on=mcols, right_on=mcols)
-    print(r.head())
-    print(t.head())
-    return left[keep]
-
+    return pd.merge(l, r, how='left', left_on=mcols, right_on=mcols)
 
 df_registry.register(merge)
 

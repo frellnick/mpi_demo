@@ -161,18 +161,3 @@ def _remove_index_col(dataframe: pd.DataFrame) -> pd.DataFrame:
     if 'index' in dataframe.columns:
         return dataframe.drop(['index'], axis=1)
     return dataframe
-
-
-
-def expand_match_to_view(view: View, combined: pd.DataFrame):
-    """
-        Expand Match to View
-        Params
-        view: Data view of source dataset
-        combined: Deduplicated matched dataframe
-    """
-
-    # Expand deduped matches to full identity table
-    mapped = view.merge(combined)
-    updatelogger.info(f'Final output {len(mapped[mapped.mpi.notna()])} of {len(view)} records assigned MPI')
-    return mapped

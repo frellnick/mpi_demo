@@ -72,8 +72,4 @@ class View:
         else:
             left = self.subset
         
-        aligned = self.fn_registry['merge'](left, right, self.context)
-        t = self.data
-        for col in aligned:
-            t[col] = aligned[col]
-        return t
+        return self.fn_registry['merge'](left, right, self.context)
